@@ -13,31 +13,29 @@ npm install
 npm run start
 ```
 
+## Problemas a Resolver
 
-
-### Problemas a Resolver
-
-#### Primer problema
+### Primer problema
 La aplicación tiene errores que no permiten ejecutarla. Lee detenidamente el código y determina dónde se encuentran los errores al ejecutarlo en la consola.
 
-#### Segundo Problema
+### Segundo Problema
 Una vez que tu aplicación ya esté funcionando, convierte el código a ECMAScript 6 (ES6):
 - Arrow Functions
 - Template Strings
 
-#### Tercer Problema
+### Tercer Problema
 Transforma el código escrito en ECMAScript 6 (ES6) para que funcione con promesas y así evitar el Callback Hell del final.
 
-#### Cuarto Problema
+### Cuarto Problema
 Optimiza el código para mejorar su legibilidad y eficiencia.
 
-#### Quinto Problema
-Envia tu solución en un Pull Request (PR) utilizando la plantilla proporcionada.
+### Quinto Problema
+Haz un fork y envia tu solución en un Pull Request (PR) utilizando la plantilla proporcionada.
 
 ### Puntos Adicionales
 Si conviertes el código a TypeScript, obtendrás puntos adicionales.
 
-### Descripción de Variables y Funciones en `index.js`
+## Descripción de Variables y Funciones en `index.js`
 
 Para ayudarte a entender el código, aquí tienes una descripción de las variables y funciones utilizadas en el archivo `index.js`:
 

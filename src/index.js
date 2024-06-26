@@ -1,33 +1,36 @@
-var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
+const https = require('https');
 
-var A = 'https://rickandmortyapi.com/api/character/';
-var B = new XMLHttpRequest();
+const API = 'https://rickandmortyapi.com/api/character/';
 
-function X(a, b) {
-  B.onreadystatechange = function (e) {
-    if (B.readyState == '4') {
-      if (B.status === '200')
-        b(null, B.responseText);
-      else return b(a);
-    }
-    else return b(a);
-  };
-  B.open('GET', a, false);
-  B.send();
-};
+function makeRequest(url, callback) {
+  https.get(url, (res) => {
+    let data = '';
+    res.on('data', (chunk) => {
+      data += chunk;
+    });
+    res.on('end', () => {
+      callback(null, data);
+    });
+  }).on('error', (err) => {
+    callback(err, null);
+  });
+}
 
-X(A, function (c, d) {
-  if (c) return console.error('Error' + ' ' + c);
+makeRequest(API, (err, data) => {
+  if (err) return console.error(err);
   console.log('Primer Llamado...');
-  X(A + d.results[0].id, function (e, f) {
-    if (e) return console.error('Error' + ' ' + e);
+  const jsonData = JSON.parse(data);
+  makeRequest(API + jsonData.results[0].id, (err, data) => {
+    if (err) return console.error(err);
     console.log('Segundo Llamado...');
-    X(JSON.parse(f).origin.url, function (g, h) {
-      if (g) return console.error('Error' + ' ' + g);
+    const characterData = JSON.parse(data);
+    makeRequest(characterData.origin.url, (err, data) => {
+      if (err) return console.error(err);
       console.log('Tercer Llamado...');
-      console.log('Personajes:' + ' ' + JSON.parse(d).info.count);
-      console.log('Primer Personaje:' + ' ' + JSON.parse(f).name);
-      console.log('Dimensión:' + ' ' + JSON.parse(h).dimension);
+      const originData = JSON.parse(data);
+      console.log('Personajes:', jsonData.info.count);
+      console.log('Primer Personaje:', characterData.name);
+      console.log('Dimensión:', originData.dimension);
     });
   });
 });

@@ -5,7 +5,7 @@ const A = "https://rickandmortyapi.com/api/character/";
 const X = (a: string): Promise<string> => {
   return fetch(a).then((response) => {
     if (!response.ok) {
-      throw new Error("Error en la solicitud: " + response.status);
+      throw new Error(`Error en la solicitud: ${response.status}`);
     }
     return response.text();
   });

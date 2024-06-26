@@ -27,9 +27,9 @@ X(A, function (c, d) {
     X(f.origin.url, function (g, h) {
       if (g) return console.error('Error' + ' ' + g);
       console.log('Tercer Llamado...');
-      console.log('Personajes:' + ' ' + JSON.parse(d).info.count);
-      console.log('Primer Personaje:' + ' ' + JSON.parse(f).name);
-      console.log('Dimensión:' + ' ' + JSON.parse(h).dimension);
+      console.log('Personajes:' + ' ' + d.info.count);
+      console.log('Primer Personaje:' + ' ' + f.name);
+      console.log('Dimensión:' + ' ' + h.dimension);
     });
   });
 });

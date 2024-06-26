@@ -11,49 +11,57 @@
 
 var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 
-const A = 'https://rickandmortyapi.com/api/character/';
+const apiBaseUrl = 'https://rickandmortyapi.com/api/character/';
 
-// Función que retorna una promesa
-const X = (a) => {
+// Función que toma por parámetro una URL y retorna la respuesta de una petición GET
+const fetchData = (url) => {
   return new Promise((resolve, reject) => {
-    var B = new XMLHttpRequest();
-    B.onreadystatechange = () => {
-      if (B.readyState === 4) {
-        if (B.status === 200) {
+    var xhr = new XMLHttpRequest(); // Corrección error 2
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState === 4) {
+        if (xhr.status === 200) { // Si la respuesta es exitosa
           try {
-            var data = JSON.parse(B.responseText);
+            var data = JSON.parse(xhr.responseText); // Corrección error 3
             resolve(data);
           } catch (e) {
-            reject(`Error parsing response from ${a}: ${e.message}`);
+            reject(`Error al obtener respuesta de ${url}: ${e.message}`);
           }
-        } else {
-          reject(`HTTP error ${B.status} on ${a}`);
+        } else { // Si hay un error en la petición
+          reject(`Error HTTP ${xhr.status} en ${url}`);
         }
       }
     };
-    B.open('GET', a, true);
-    B.send();
+    xhr.open('GET', url, true); // Corrección error 1
+    xhr.send();
   });
 };
 
-// Llamadas encadenadas usando promesas
-X(A)
-  .then(d => {
-    console.log('Primer Llamado...');
-    return X(`${A}${d.results[0].id}`).then(f => {
-      return { f, d }; // Retorna ambos resultados
-    });
-  })
-  .then(({ f, d }) => {
-    console.log('Segundo Llamado...');
-    return X(f.origin.url).then(h => {
-      console.log('Tercer Llamado...');
+// Función principal asincrónica para manejar las llamadas en secuencia
+const main = async () => {
+  try {
+    console.log('Cargando Información...');
 
-      console.log(`Personajes: ${d.info.count}`);
-      console.log(`Primer Personaje: ${f.name}`);
-      console.log(`Dimensión: ${h.dimension}`);
-    });
-  })
-  .catch(error => {
+    const charactersResponse = await fetchData(apiBaseUrl); // Obtener personajes
+
+    const totalCharacters = charactersResponse.info.count; // Obtener cantidad de personajes
+
+    const firstCharacter = charactersResponse.results[0]; // Obtener primer personaje
+    const firstCharacterId = firstCharacter.id; // Obtener ID del primer personaje
+    const originUrl = firstCharacter.origin.url; // URL con origen del primer personaje
+
+    const [firstCharacterInfo, originInfo] = await Promise.all([ // Ejecutar ambas promesas a la vez para esperar menos tiempo
+      fetchData(`${apiBaseUrl}${firstCharacterId}`),
+      fetchData(originUrl)
+    ]);
+
+    // Imprimir información
+    console.log(`Personajes: ${totalCharacters}`);
+    console.log(`Primer Personaje: ${firstCharacterInfo.name}`);
+    console.log(`Dimensión: ${originInfo.dimension}`);
+
+  } catch (error) {
     console.error(`Error: ${error}`);
-  });
+  }
+};
+
+main();

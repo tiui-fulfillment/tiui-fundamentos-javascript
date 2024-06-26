@@ -23,18 +23,24 @@ fetchData(apiUrl)
   .then(data => {
     console.log('Primer Llamado...');
     const firstCharacterId = data.results[0].id;
+    
     return fetchData(apiUrl + firstCharacterId);
   })
   .then(character => {
     console.log('Segundo Llamado...');
     const originUrl = character.origin.url;
+
     return fetchData(originUrl);
   })
   .then(origin => {
     console.log('Tercer Llamado...');
-    console.log(`Personajes: ${origin.info.count}`);
-    console.log(`Primer Personaje: ${origin.results[0].name}`);
+    console.log(`Personajes: ${origin.residents.length}`); 
     console.log(`Dimensión: ${origin.dimension}`);
+
+    return fetchData(origin.residents[0]);
+  })
+  .then(characterInfo => {
+    console.log(`Primer Personaje: ${characterInfo.name}`);
   })
   .catch(error => {
     console.error('Error:', error);

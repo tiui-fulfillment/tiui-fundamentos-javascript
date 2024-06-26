@@ -5,8 +5,8 @@ var B = new XMLHttpRequest();
 
 function X(a, b) {
   B.onreadystatechange = function (e) {
-    if (B.readyState == '4') {
-      if (B.status === '200')
+    if (B.readyState == 4) {
+      if (B.status === 200)
         b(null, B.responseText);
       else return b(a);
     }

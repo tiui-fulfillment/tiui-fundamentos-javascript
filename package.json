@@ -4,7 +4,7 @@
   "description": "medir tus habilidades en JavaScript y ver cómo puedes resolver los desafíos propuestos",
   "main": "index.js",
   "scripts": {
-    "start": "node src/index.js"
+    "start": "ts-node src/index.ts"
   },
   "keywords": [
     "javascript",
@@ -14,5 +14,10 @@
   "license": "MIT",
   "dependencies": {
     "xmlhttprequest": "^1.8.0"
+  },
+  "devDependencies": {
+    "@types/xmlhttprequest": "1.8.2",
+    "ts-node": "10.9.2",
+    "typescript": "5.5.2"
   }
 }

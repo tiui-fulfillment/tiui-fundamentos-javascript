@@ -11,46 +11,49 @@
 
 var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 
-var A = 'https://rickandmortyapi.com/api/character/';
+const A = 'https://rickandmortyapi.com/api/character/';
 
-const X = (a, b) => {
-  var B = new XMLHttpRequest(); // Resolución error 2
-  B.onreadystatechange = () => {
-    if (B.readyState === 4) {
-      if (B.status === 200) {
-        try {
-          var data = JSON.parse(B.responseText); // Resolución error 3
-          b(null, data);
-        } catch (e) {
-          b(`Error parsing response from ${a}: ${e.message}`);
+// Función que retorna una promesa
+const X = (a) => {
+  return new Promise((resolve, reject) => {
+    var B = new XMLHttpRequest();
+    B.onreadystatechange = () => {
+      if (B.readyState === 4) {
+        if (B.status === 200) {
+          try {
+            var data = JSON.parse(B.responseText);
+            resolve(data);
+          } catch (e) {
+            reject(`Error parsing response from ${a}: ${e.message}`);
+          }
+        } else {
+          reject(`HTTP error ${B.status} on ${a}`);
         }
-      } else {
-        b(`HTTP error ${B.status} on ${a}`);
       }
-    }
-  };
-  B.open('GET', a, true); // Resolución error 1
-  B.send();
-}
+    };
+    B.open('GET', a, true);
+    B.send();
+  });
+};
 
-// Llamadas encadenadas
-X(A, (c, d) => {
-  if (c) return console.error(`Error: ${c}`);
-  console.log(`Primer Llamado...`);
-
-  X(`${A}${d.results[0].id}`, (e, f) => {
-    if (e) return console.error(`Error: ${e}`);
+// Llamadas encadenadas usando promesas
+X(A)
+  .then(d => {
+    console.log('Primer Llamado...');
+    return X(`${A}${d.results[0].id}`).then(f => {
+      return { f, d }; // Retorna ambos resultados
+    });
+  })
+  .then(({ f, d }) => {
     console.log('Segundo Llamado...');
-
-    var originUrl = f.origin.url;
-
-    X(originUrl, (g, h) => {
-      if (g) return console.error(`Error: ${g}`);
-      console.log(`Tercer Llamado...`);
+    return X(f.origin.url).then(h => {
+      console.log('Tercer Llamado...');
 
       console.log(`Personajes: ${d.info.count}`);
       console.log(`Primer Personaje: ${f.name}`);
       console.log(`Dimensión: ${h.dimension}`);
     });
+  })
+  .catch(error => {
+    console.error(`Error: ${error}`);
   });
-});

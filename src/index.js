@@ -19,29 +19,30 @@ const fetchData = (url) => {
   });
 };
 
-fetchData(apiUrl)
-  .then(data => {
+const fetchCharacterData = async () => {
+  try {
     console.log('Primer Llamado...');
-    const firstCharacterId = data.results[0].id;
-    
-    return fetchData(apiUrl + firstCharacterId);
-  })
-  .then(character => {
+    const firstResponse = await fetchData(apiUrl);
+    const firstCharacterId = firstResponse.results[0].id;
+
     console.log('Segundo Llamado...');
-    const originUrl = character.origin.url;
+    const characterResponse = await fetchData(apiUrl + firstCharacterId);
+    const originUrl = characterResponse.origin.url;
 
-    return fetchData(originUrl);
-  })
-  .then(origin => {
     console.log('Tercer Llamado...');
-    console.log(`Personajes: ${origin.residents.length}`); 
-    console.log(`Dimensión: ${origin.dimension}`);
+    const originResponse = await fetchData(originUrl);
+    const residentsLength = originResponse.residents.length;
+    const firstResidentUrl = originResponse.residents[0];
 
-    return fetchData(origin.residents[0]);
-  })
-  .then(characterInfo => {
-    console.log(`Primer Personaje: ${characterInfo.name}`);
-  })
-  .catch(error => {
+    console.log(`Personajes: ${residentsLength}`);
+    console.log(`Dimensión: ${originResponse.dimension}`);
+
+    console.log('Obteniendo nombre del primer personaje...');
+    const characterInfo = await fetchData(firstResidentUrl);
+    console.log(`Nombre del primer personaje: ${characterInfo.name}`);
+  } catch (error) {
     console.error('Error:', error);
-  });
+  }
+};
+
+fetchCharacterData();

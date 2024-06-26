@@ -6,6 +6,24 @@ interface FetchDataReturnType<T> {
     data: T|null
 }
 
+/**
+ * Realiza una solicitud HTTP GET a la URL proporcionada y devuelve una promesa que resuelve con el resultado.
+ * 
+ * @template T - El tipo de los datos esperados en la respuesta.
+ * @param {string} url - La URL a la que se hará la solicitud.
+ * @returns {Promise<FetchDataReturnType<T>>} Una promesa que resuelve con un objeto que contiene el error (si lo hay) y los datos.
+ * 
+ * @example
+ * // Ejemplo de uso
+ * fetchData<ApiUrlResponse>('https://rickandmortyapi.com/api/character/')
+ *   .then(({ err, data }) => {
+ *     if (err) {
+ *       console.error(err);
+ *     } else {
+ *       console.log(data);
+ *     }
+ *   });
+ */
 export default function fetchData<T>(url: string): Promise<FetchDataReturnType<T>> {
     const xhttp = new XMLHttpRequest();
   

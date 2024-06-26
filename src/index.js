@@ -6,11 +6,13 @@ var B = new XMLHttpRequest();
 function X(a, b) {
   B.onreadystatechange = function (e) {
     if (B.readyState == 4) {
-      if (B.status === 200)
-        b(null, B.responseText);
-      else return b(a);
+      if (B.status === 200) {
+        var responseData = JSON.parse(B.responseText);
+        b(null, responseData);
+      } else {
+        b(a);
+      }
     }
-    else return b(a);
   };
   B.open('GET', a, false);
   B.send();

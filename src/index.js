@@ -37,7 +37,6 @@ const fetchCharacterData = async () => {
     console.log(`Personajes: ${residentsLength}`);
     console.log(`Dimensión: ${originResponse.dimension}`);
 
-    console.log('Obteniendo nombre del primer personaje...');
     const characterInfo = await fetchData(firstResidentUrl);
     console.log(`Nombre del primer personaje: ${characterInfo.name}`);
   } catch (error) {

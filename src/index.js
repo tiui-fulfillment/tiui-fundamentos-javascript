@@ -3,7 +3,7 @@ const XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 const A = 'https://rickandmortyapi.com/api/character/';
 const B = new XMLHttpRequest();
 
-function X(a, b) {
+const X = (a, b) => {
   B.onreadystatechange = function (e) {
     if (B.readyState == 4) {
       if (B.status === 200) {
@@ -18,7 +18,7 @@ function X(a, b) {
   B.send();
 };
 
-X(A, function (c, d) {
+X(A, (c, d) => {
   if (c) return console.error('Error' + ' ' + c);
   console.log('Primer Llamado...');
   X(A + d.results[0].id, function (e, f) {

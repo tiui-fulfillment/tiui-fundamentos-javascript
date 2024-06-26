@@ -1,33 +1,38 @@
-var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
-
-var A = 'https://rickandmortyapi.com/api/character/';
-var B = new XMLHttpRequest();
-
-function X(a, b) {
-  B.onreadystatechange = function (e) {
-    if (B.readyState == '4') {
-      if (B.status === '200')
-        b(null, B.responseText);
-      else return b(a);
-    }
-    else return b(a);
-  };
-  B.open('GET', a, false);
-  B.send();
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
 };
-
-X(A, function (c, d) {
-  if (c) return console.error('Error' + ' ' + c);
-  console.log('Primer Llamado...');
-  X(A + d.results[0].id, function (e, f) {
-    if (e) return console.error('Error' + ' ' + e);
-    console.log('Segundo Llamado...');
-    X(JSON.parse(f).origin.url, function (g, h) {
-      if (g) return console.error('Error' + ' ' + g);
-      console.log('Tercer Llamado...');
-      console.log('Personajes:' + ' ' + JSON.parse(d).info.count);
-      console.log('Primer Personaje:' + ' ' + JSON.parse(f).name);
-      console.log('Dimensión:' + ' ' + JSON.parse(h).dimension);
-    });
-  });
-});
+Object.defineProperty(exports, "__esModule", { value: true });
+const axios_1 = __importDefault(require("axios"));
+const A = "https://rickandmortyapi.com/api/character/";
+// Función asincrónica utilizando arrow function y promesas para obtener datos de la URL
+const fetchData = async (url) => {
+    try {
+        const response = await axios_1.default.get(url);
+        return response.data;
+    }
+    catch (error) {
+        throw error;
+    }
+};
+// Función principal asincrónica para ejecutar el flujo principal del programa
+async function main() {
+    try {
+        console.log("Primer Llamado...");
+        const data = await fetchData(A);
+        const characterId = data.results[0].id;
+        console.log("Segundo Llamado...");
+        const characterData = await fetchData(`${A}${characterId}`);
+        const originUrl = characterData.origin.url;
+        console.log("Tercer Llamado...");
+        const originData = await fetchData(originUrl);
+        // Muestra los resultados obtenidos
+        console.log("Personajes:", data.info.count);
+        console.log("Primer Personaje:", characterData.name);
+        console.log("Dimensión:", originData.dimension);
+    }
+    catch (error) {
+        console.error("Error:", error.message);
+    }
+}
+main();

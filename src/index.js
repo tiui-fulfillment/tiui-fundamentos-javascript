@@ -1,33 +1,47 @@
-var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
+const XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 
-var A = 'https://rickandmortyapi.com/api/character/';
-var B = new XMLHttpRequest();
+const apiUrl = 'https://rickandmortyapi.com/api/character/';
+const xmlHttpsRequest = new XMLHttpRequest();
 
-function X(a, b) {
-  B.onreadystatechange = function (e) {
-    if (B.readyState == '4') {
-      if (B.status === '200')
-        b(null, B.responseText);
-      else return b(a);
-    }
-    else return b(a);
-  };
-  B.open('GET', a, false);
-  B.send();
+const fetchData = (url) => {
+  return new Promise((resolve, reject) => {
+    xmlHttpsRequest.onreadystatechange = () => {
+      if (xmlHttpsRequest.readyState === 4) {
+        if (xmlHttpsRequest.status === 200) {
+          resolve(JSON.parse(xmlHttpsRequest.responseText));
+        } else {
+          reject(`Error ${xmlHttpsRequest.status}`);
+        }
+      }
+    };
+    xmlHttpsRequest.open('GET', url, false);
+    xmlHttpsRequest.send();
+  });
 };
 
-X(A, function (c, d) {
-  if (c) return console.error('Error' + ' ' + c);
-  console.log('Primer Llamado...');
-  X(A + d.results[0].id, function (e, f) {
-    if (e) return console.error('Error' + ' ' + e);
+const fetchCharacterData = async () => {
+  try {
+    console.log('Primer Llamado...');
+    const firstResponse = await fetchData(apiUrl);
+    const firstCharacterId = firstResponse.results[0].id;
+
     console.log('Segundo Llamado...');
-    X(JSON.parse(f).origin.url, function (g, h) {
-      if (g) return console.error('Error' + ' ' + g);
-      console.log('Tercer Llamado...');
-      console.log('Personajes:' + ' ' + JSON.parse(d).info.count);
-      console.log('Primer Personaje:' + ' ' + JSON.parse(f).name);
-      console.log('Dimensión:' + ' ' + JSON.parse(h).dimension);
-    });
-  });
-});
+    const characterResponse = await fetchData(apiUrl + firstCharacterId);
+    const originUrl = characterResponse.origin.url;
+
+    console.log('Tercer Llamado...');
+    const originResponse = await fetchData(originUrl);
+    const residentsLength = originResponse.residents.length;
+    const firstResidentUrl = originResponse.residents[0];
+
+    console.log(`Personajes: ${residentsLength}`);
+    console.log(`Dimensión: ${originResponse.dimension}`);
+
+    const characterInfo = await fetchData(firstResidentUrl);
+    console.log(`Nombre del primer personaje: ${characterInfo.name}`);
+  } catch (error) {
+    console.error('Error:', error);
+  }
+};
+
+fetchCharacterData();

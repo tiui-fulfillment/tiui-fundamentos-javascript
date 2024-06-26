@@ -24,7 +24,7 @@ X(A, function (c, d) {
   X(A + d.results[0].id, function (e, f) {
     if (e) return console.error('Error' + ' ' + e);
     console.log('Segundo Llamado...');
-    X(JSON.parse(f).origin.url, function (g, h) {
+    X(f.origin.url, function (g, h) {
       if (g) return console.error('Error' + ' ' + g);
       console.log('Tercer Llamado...');
       console.log('Personajes:' + ' ' + JSON.parse(d).info.count);

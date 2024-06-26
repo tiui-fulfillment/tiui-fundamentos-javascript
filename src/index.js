@@ -19,17 +19,17 @@ const X = (a, b) => {
 };
 
 X(A, (c, d) => {
-  if (c) return console.error('Error' + ' ' + c);
+  if (c) return console.error(`Error ${c}`);
   console.log('Primer Llamado...');
-  X(A + d.results[0].id, function (e, f) {
-    if (e) return console.error('Error' + ' ' + e);
+  X(A + d.results[0].id, (e, f) => {
+    if (e) return console.error(`Error ${e}`);
     console.log('Segundo Llamado...');
-    X(f.origin.url, function (g, h) {
-      if (g) return console.error('Error' + ' ' + g);
+    X(f.origin.url, (g, h) => {
+      if (g) return console.error(`Error ${g}`);
       console.log('Tercer Llamado...');
-      console.log('Personajes:' + ' ' + d.info.count);
-      console.log('Primer Personaje:' + ' ' + f.name);
-      console.log('Dimensión:' + ' ' + h.dimension);
+      console.log(`Personajes: ${d.info.count}`);
+      console.log(`Primer Personaje: ${f.name}`);
+      console.log(`Dimensión: ${h?.dimension}`);
     });
   });
 });

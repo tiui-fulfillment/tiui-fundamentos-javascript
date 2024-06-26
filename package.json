@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "medir tus habilidades en JavaScript y ver cómo puedes resolver los desafíos propuestos",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "start": "node src/index.js"
   },

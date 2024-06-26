@@ -1,33 +1,35 @@
-var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
+import { XMLHttpRequest } from "xmlhttprequest";
 
-var A = 'https://rickandmortyapi.com/api/character/';
-var B = new XMLHttpRequest();
+const A = 'https://rickandmortyapi.com/api/character/';
 
-function X(a, b) {
-  B.onreadystatechange = function (e) {
-    if (B.readyState == '4') {
-      if (B.status === '200')
-        b(null, B.responseText);
-      else return b(a);
-    }
-    else return b(a);
-  };
-  B.open('GET', a, false);
-  B.send();
+const fetchJSON = async (url) => {
+  return new Promise((resolve, reject) => {
+    const request = new XMLHttpRequest();
+    request.onreadystatechange = () => {
+      if (request.readyState === 4) {
+        if (request.status === 200) resolve(JSON.parse(request.responseText));
+        else reject(new Error(`Solicitud fallida con estado ${request.status}`));
+      }
+    };
+    request.open('GET', url, true);
+    request.send();
+  });
 };
 
-X(A, function (c, d) {
-  if (c) return console.error('Error' + ' ' + c);
-  console.log('Primer Llamado...');
-  X(A + d.results[0].id, function (e, f) {
-    if (e) return console.error('Error' + ' ' + e);
-    console.log('Segundo Llamado...');
-    X(JSON.parse(f).origin.url, function (g, h) {
-      if (g) return console.error('Error' + ' ' + g);
-      console.log('Tercer Llamado...');
-      console.log('Personajes:' + ' ' + JSON.parse(d).info.count);
-      console.log('Primer Personaje:' + ' ' + JSON.parse(f).name);
-      console.log('Dimensión:' + ' ' + JSON.parse(h).dimension);
-    });
-  });
-});
+const fetchData = async () => {
+  try {
+    const d = await fetchJSON(A);
+    console.log("Primer Llamado...");
+    const f = await fetchJSON(`${A}${d.results[0].id}`);
+    console.log("Segundo Llamado...");
+    const h = await fetchJSON(f.origin.url);
+    console.log("Tercero Llamado...");
+    console.log(`Personajes: ${d.info.count}`);
+    console.log(`Primer Personaje: ${f.name}`);
+    console.log(`Dimensión: ${h.dimension}`);
+  } catch (error) {
+    console.error(`Error: ${error.message}`);
+  }
+};
+
+fetchData();

@@ -1,27 +1,27 @@
+
+
 const url = "https://rickandmortyapi.com/api/character/";
 
-async function fetchData(url) {
-  try {
-    const response = await fetch(url);
-    if (!response.ok) {
-      throw new Error(`HTTP error! Status: ${response.status}`);
-    }
-    return await response.json();
-  } catch (error) {
-    throw new Error(`Fetch error: ${error.message}`);
-  }
+
+async function fetchDatos(url) {
+  const result = await fetch(url)
+  .then(response => response.json())
+  .catch(error => error);
+
+  return result
+  
 }
 
-async function getPeticion(url) {
+async function peticion(url) {
   try {
     console.log("Primer Llamado...");
-    const resultado = await fetchData(url);
+    const resultado = await fetchDatos(url);
 
     console.log("Segundo Llamado...");
-    const resultado2 = await fetchData(url + resultado.results[0].id);
+    const resultado2 = await fetchDatos(url + resultado.results[0].id);
 
     console.log("Tercer Llamado...");
-    const resultado3 = await fetchData(JSON.parse(resultado2).origin.url);
+    const resultado3 = await fetchDatos(resultado2.origin.url);
 
     console.log(`
       Personajes: ${resultado.info.count}
@@ -33,4 +33,4 @@ async function getPeticion(url) {
   }
 }
 
-getPeticion(url);
+peticion(url)

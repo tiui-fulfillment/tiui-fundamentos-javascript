@@ -1,38 +1,41 @@
-/* Segundo problema: Código con ECMAScript 6 usando Arrow Functions y Template Strings */
+/* Tercer problema: Usando promesas para evitar el Callback Hell */
 
 const XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 const A = "https://rickandmortyapi.com/api/character/";
 
-const X = (a, b) => {
-  const B = new XMLHttpRequest();
-  B.onreadystatechange = (e) => {
-    if (B.readyState === 4) {
-      if (B.status === 200) {
-        b(null, JSON.parse(B.responseText));
-      } else {
-        b(a);
+const X = (a) => {
+  return new Promise((resolve, reject) => {
+    const B = new XMLHttpRequest();
+    B.onreadystatechange = () => {
+      if (B.readyState === 4) {
+        if (B.status === 200) {
+          resolve(JSON.parse(B.responseText));
+        } else {
+          reject(`HTTP error: ${B.status}`);
+        }
       }
-    }
-  };
-  B.open("GET", a, true);
-  B.send();
+    };
+    B.open("GET", a, true);
+    B.send();
+  });
 };
 
-X(A, (c, d) => {
-  if (c) return console.error(`Error primero: ${c}`);
-  console.log("Primer Llamado...");
+let d;
 
-  X(`${A}${d.results[0].id}`, (e, f) => {
-    if (e) return console.error(`Error segundo: ${e}`);
+X(A)
+  .then((response) => {
+    d = response;
+    console.log("Primer Llamado...");
+    return X(`${A}${d.results[0].id}`);
+  })
+  .then((f) => {
     console.log("Segundo Llamado...");
-
-    X(f.origin.url, (g, h) => {
-      if (g) return console.error(`Error tercero: ${g}`);
-      console.log("Tercer Llamado...");
-
-      console.log(`Personajes: ${d.info.count}`);
-      console.log(`Primer Personaje: ${f.name}`);
-      console.log(`Dimensión: ${h.dimension}`);
-    });
-  });
-});
+    return X(f.origin.url).then((h) => ({ d, f, h }));
+  })
+  .then(({ d, f, h }) => {
+    console.log("Tercer Llamado...");
+    console.log(`Personajes: ${d.info.count}`);
+    console.log(`Primer Personaje: ${f.name}`);
+    console.log(`Dimensión: ${h.dimension}`);
+  })
+  .catch((error) => console.error(`Error: ${error}`));

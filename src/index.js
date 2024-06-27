@@ -1,33 +1,47 @@
-var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
+const XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 
-var A = 'https://rickandmortyapi.com/api/character/';
-var B = new XMLHttpRequest();
+const baseURL = 'https://rickandmortyapi.com/api/';
 
-function X(a, b) {
-  B.onreadystatechange = function (e) {
-    if (B.readyState == '4') {
-      if (B.status === '200')
-        b(null, B.responseText);
-      else return b(a);
-    }
-    else return b(a);
-  };
-  B.open('GET', a, false);
-  B.send();
+const fetchData = (url) => {
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = () => {
+      if (xhr.readyState === 4) {
+        if (xhr.status === 200) {
+          resolve(xhr.responseText);
+        } else {
+          reject(new Error(`Error: ${xhr.status}`));
+        }
+      }
+    };
+    xhr.open('GET', url, true);
+    xhr.send();
+  });
 };
 
-X(A, function (c, d) {
-  if (c) return console.error('Error' + ' ' + c);
-  console.log('Primer Llamado...');
-  X(A + d.results[0].id, function (e, f) {
-    if (e) return console.error('Error' + ' ' + e);
+const fetchCharacterData = async () => {
+  try {
+    console.log('Primer Llamado...');
+    const response = await fetchData(`${baseURL}character/`);
+    const data = JSON.parse(response);
+    const characterUrl = `${baseURL}character/${data.results[0].id}`;
+    console.log(`URL del primer personaje: ${characterUrl}`);
+
     console.log('Segundo Llamado...');
-    X(JSON.parse(f).origin.url, function (g, h) {
-      if (g) return console.error('Error' + ' ' + g);
-      console.log('Tercer Llamado...');
-      console.log('Personajes:' + ' ' + JSON.parse(d).info.count);
-      console.log('Primer Personaje:' + ' ' + JSON.parse(f).name);
-      console.log('Dimensión:' + ' ' + JSON.parse(h).dimension);
-    });
-  });
-});
+    const characterResponse = await fetchData(characterUrl);
+    const characterData = JSON.parse(characterResponse);
+    console.log(`Origen del primer personaje: ${characterData.origin.url}`);
+
+    console.log('Tercer Llamado...');
+    const locationResponse = await fetchData(characterData.origin.url);
+    const locationData = JSON.parse(locationResponse);
+
+    console.log(`Personajes: ${data.info.count}`);
+    console.log(`Primer Personaje: ${characterData.name}`);
+    console.log(`Dimensión: ${locationData.dimension}`);
+  } catch (error) {
+    console.error(`Error: ${error.message}`);
+  }
+};
+
+fetchCharacterData();

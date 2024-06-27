@@ -1,39 +1,38 @@
-/* Primer problema modificacion y correccion de errores */
+/* Segundo problema: Código con ECMAScript 6 usando Arrow Functions y Template Strings */
 
-var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
-var A = "https://rickandmortyapi.com/api/character/";
+const XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
+const A = "https://rickandmortyapi.com/api/character/";
 
-function X(a, b) {
-  var B = new XMLHttpRequest(); // Creamos nueva instancia en cada llamada
-  B.onreadystatechange = function (e) {
+const X = (a, b) => {
+  const B = new XMLHttpRequest();
+  B.onreadystatechange = (e) => {
     if (B.readyState === 4) {
       if (B.status === 200) {
-        b(null, JSON.parse(B.responseText)); // Parseamos la respuesta JSON
+        b(null, JSON.parse(B.responseText));
       } else {
-        b(a); // Redundancia en el uso del return
+        b(a);
       }
     }
   };
-  B.open("GET", a, true); // hacemos uso de una solicitud asíncrona
+  B.open("GET", a, true);
   B.send();
-}
+};
 
-X(A, function (c, d) {
-  if (c) return console.error("Error primero: " + c);
+X(A, (c, d) => {
+  if (c) return console.error(`Error primero: ${c}`);
   console.log("Primer Llamado...");
 
-  X(A + d.results[0].id, function (e, f) {
-    if (e) return console.error("Error segundo: " + e);
+  X(`${A}${d.results[0].id}`, (e, f) => {
+    if (e) return console.error(`Error segundo: ${e}`);
     console.log("Segundo Llamado...");
 
-    X(f.origin.url, function (g, h) {
-      //quitamos el parseo de aqui
-      if (g) return console.error("Error tercero: " + g);
+    X(f.origin.url, (g, h) => {
+      if (g) return console.error(`Error tercero: ${g}`);
       console.log("Tercer Llamado...");
 
-      console.log("Personajes: " + d.info.count);
-      console.log("Primer Personaje: " + f.name);
-      console.log("Dimensión: " + h.dimension);
+      console.log(`Personajes: ${d.info.count}`);
+      console.log(`Primer Personaje: ${f.name}`);
+      console.log(`Dimensión: ${h.dimension}`);
     });
   });
 });

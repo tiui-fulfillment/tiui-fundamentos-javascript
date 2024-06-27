@@ -6,7 +6,7 @@ var B = new XMLHttpRequest();
 function X(a, b) {
   B.onreadystatechange = function (e) {
     if (B.readyState == '4') {
-      if (B.status === '200')
+      if (B.status === 200) // <- No se validaba que el estado fuera '200' (una string)
         b(null, B.responseText);
       else return b(a);
     }
@@ -19,13 +19,14 @@ function X(a, b) {
 X(A, function (c, d) {
   if (c) return console.error('Error' + ' ' + c);
   console.log('Primer Llamado...');
+  d = JSON.parse(d) // <- Aqui converti la respuesta a JSON, ya que era unicamente texto
   X(A + d.results[0].id, function (e, f) {
     if (e) return console.error('Error' + ' ' + e);
     console.log('Segundo Llamado...');
     X(JSON.parse(f).origin.url, function (g, h) {
       if (g) return console.error('Error' + ' ' + g);
       console.log('Tercer Llamado...');
-      console.log('Personajes:' + ' ' + JSON.parse(d).info.count);
+      console.log('Personajes:' + ' ' + d.info.count);
       console.log('Primer Personaje:' + ' ' + JSON.parse(f).name);
       console.log('Dimensión:' + ' ' + JSON.parse(h).dimension);
     });

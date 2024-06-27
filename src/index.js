@@ -3,31 +3,42 @@ const XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 const A = "https://rickandmortyapi.com/api/character/";
 const B = new XMLHttpRequest();
 
-const X = (a, b) => {
-  B.onreadystatechange = (e) => {
-    if (B.readyState === 4) {
-      if (B.status === 200) {
-        b(null, B.responseText);
-      } else return b(a);
-    } else return b(a);
-  };
-  B.open("GET", a, false);
-  B.send();
+const X = (a) => {
+  return new Promise((resolve, reject) => {
+    B.onreadystatechange = () => {
+      if (B.readyState === 4) {
+        if (B.status === 200) {
+          resolve(B.responseText);
+        } else {
+          reject(`Error: ${a}`);
+        }
+      }
+    };
+    B.open("GET", a, false);
+    B.send();
+  });
 };
 
-X(A, (c, d) => {
-  if (c) return console.error(`Error ${c}`);
-  console.log("Primer Llamado...");
-  const data = JSON.parse(d);
-  X(A + data.results[0].id, (e, f) => {
-    if (e) return console.error(`Error ${e}`);
+const main = async () => {
+  try {
+    console.log("Primer Llamado...");
+    const d = await X(A);
+    const data = JSON.parse(d);
+
     console.log("Segundo Llamado...");
-    X(JSON.parse(f).origin.url, (g, h) => {
-      if (g) return console.error(`Error ${g}`);
-      console.log("Tercer Llamado...");
-      console.log(`Personajes: ${JSON.parse(d).info.count}`);
-      console.log(`Primer Personaje: ${JSON.parse(f).name}`);
-      console.log(`Dimensión: ${JSON.parse(h).dimension}`);
-    });
-  });
-});
+    const f = await X(A + data.results[0].id);
+    const firstCharacter = JSON.parse(f);
+
+    console.log("Tercer Llamado...");
+    const h = await X(firstCharacter.origin.url);
+    const dimensionData = JSON.parse(h);
+
+    console.log(`Personajes: ${data.info.count}`);
+    console.log(`Primer Personaje: ${firstCharacter.name}`);
+    console.log(`Dimensión: ${dimensionData.dimension}`);
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+main();

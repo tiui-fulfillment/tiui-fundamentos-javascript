@@ -9,31 +9,23 @@
   3. Se estaba pasando como parámetro B.responseText como cadena de texto, no como objeto -> se añadió la línea var data = JSON.parse(B.responseText)
 */
 
-var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
+//var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 
-const apiBaseUrl = 'https://rickandmortyapi.com/api/character/';
+
+const apiBaseUrl: string = 'https://rickandmortyapi.com/api/character/';
 
 // Función que toma por parámetro una URL y retorna la respuesta de una petición GET
-const fetchData = (url) => {
-  return new Promise((resolve, reject) => {
-    var xhr = new XMLHttpRequest(); // Corrección error 2
-    xhr.onreadystatechange = function() {
-      if (xhr.readyState === 4) {
-        if (xhr.status === 200) { // Si la respuesta es exitosa
-          try {
-            var data = JSON.parse(xhr.responseText); // Corrección error 3
-            resolve(data);
-          } catch (e) {
-            reject(`Error al obtener respuesta de ${url}: ${e.message}`);
-          }
-        } else { // Si hay un error en la petición
-          reject(`Error HTTP ${xhr.status} en ${url}`);
-        }
-      }
-    };
-    xhr.open('GET', url, true); // Corrección error 1
-    xhr.send();
-  });
+const fetchData = async (url: string): Promise<any> => {
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`Error HTTP ${response.status} en ${url}`);
+    }
+    const data = await response.json();
+    return data;
+  } catch (error: any) {
+    throw new Error(`Error al obtener respuesta de ${url}: ${error.message}`);
+  }
 };
 
 // Función principal asincrónica para manejar las llamadas en secuencia
@@ -43,11 +35,11 @@ const main = async () => {
 
     const charactersResponse = await fetchData(apiBaseUrl); // Obtener personajes
 
-    const totalCharacters = charactersResponse.info.count; // Obtener cantidad de personajes
+    const totalCharacters: number = charactersResponse.info.count; // Obtener cantidad de personajes
 
     const firstCharacter = charactersResponse.results[0]; // Obtener primer personaje
-    const firstCharacterId = firstCharacter.id; // Obtener ID del primer personaje
-    const originUrl = firstCharacter.origin.url; // URL con origen del primer personaje
+    const firstCharacterId: number = firstCharacter.id; // Obtener ID del primer personaje
+    const originUrl: string = firstCharacter.origin.url; // URL con origen del primer personaje
 
     const [firstCharacterInfo, originInfo] = await Promise.all([ // Ejecutar ambas promesas a la vez para esperar menos tiempo
       fetchData(`${apiBaseUrl}${firstCharacterId}`),

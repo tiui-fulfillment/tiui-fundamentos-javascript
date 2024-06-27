@@ -1,7 +1,6 @@
 {
   "name": "tiui-fundamentos-javascript",
   "version": "1.0.0",
-  "type": "module",
   "description": "medir tus habilidades en JavaScript y ver cómo puedes resolver los desafíos propuestos",
   "main": "index.js",
   "scripts": {
@@ -14,6 +13,9 @@
   "author": "Alejandro Lopez <alejandro.lopez@tiui.mx>",
   "license": "MIT",
   "dependencies": {
-    "xmlhttprequest": "^1.8.0"
+    "xmlhttprequest-ts": "^1.0.1"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.2"
   }
 }

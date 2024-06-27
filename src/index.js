@@ -20,22 +20,19 @@ const fetchApi = (url) => {
   });
 };
 
-fetchApi(apiUrl)
-  .then((data) => {
-    console.log('Primer Llamado...');
+const fetchData = async () => {
+  try {
+    const data = await fetchApi(apiUrl);
     console.log(`Personajes: ${data.info.count}`);
-    return fetchApi(apiUrl + data.results[0].id);
 
-  })
-  .then((characterData) => {
-    console.log('Segundo Llamado...');
+    const characterData = await fetchApi(apiUrl + data.results[0].id);
     console.log(`Primer Personaje: ${characterData.name}`);
-    return fetchApi(characterData.origin.url);
-  })
-  .then((dimensionData) => {
-    console.log('Tercer Llamado...');
+
+    const dimensionData = await fetchApi(characterData.origin.url);
     console.log(`Dimensión: ${dimensionData.dimension}`);
-  })
-  .catch((error) => {
+  } catch (error) {
     console.error(`Error: ${error.message}`);
-  });
+  }
+};
+
+fetchData();

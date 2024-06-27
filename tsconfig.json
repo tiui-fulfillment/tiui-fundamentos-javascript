@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "module": "commonjs",
+    "outDir": "./dist", // Esto puede variar dependiendo de dónde quieras que se genere el directorio de salida
+    "strict": true,
+    "esModuleInterop": true
+  },
+  "include": [
+    "src/*"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}

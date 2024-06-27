@@ -1,6 +1,6 @@
 import { CharacterList, Character, Dimension } from "./interfaces";
 
-const A = "https://rickandmortyapi.com/api/character/";
+const API_URL = "https://rickandmortyapi.com/api/character/";
 
 const fetchData = async <T>(url: string): Promise<T> => {
   try {
@@ -21,11 +21,11 @@ const fetchData = async <T>(url: string): Promise<T> => {
 const main = async (): Promise<void> => {
   try {
     console.log("Primer Llamado...");
-    const data: CharacterList = await fetchData<CharacterList>(A);
+    const data: CharacterList = await fetchData<CharacterList>(API_URL);
 
     console.log("Segundo Llamado...");
     const firstCharacter: Character = await fetchData<Character>(
-      A + data.results[0].id,
+      API_URL + data.results[0].id,
     );
 
     console.log("Tercer Llamado...");

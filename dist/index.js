@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const A = "https://rickandmortyapi.com/api/character/";
+const API_URL = "https://rickandmortyapi.com/api/character/";
 const fetchData = (url) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const response = yield fetch(url);
@@ -30,9 +30,9 @@ const fetchData = (url) => __awaiter(void 0, void 0, void 0, function* () {
 const main = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
         console.log("Primer Llamado...");
-        const data = yield fetchData(A);
+        const data = yield fetchData(API_URL);
         console.log("Segundo Llamado...");
-        const firstCharacter = yield fetchData(A + data.results[0].id);
+        const firstCharacter = yield fetchData(API_URL + data.results[0].id);
         console.log("Tercer Llamado...");
         const dimensionData = yield fetchData(firstCharacter.origin.url);
         console.log(`Personajes: ${data.info.count}`);

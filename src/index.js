@@ -1,41 +1,40 @@
-/* Tercer problema: Usando promesas para evitar el Callback Hell */
+/* Cuarto problema: MOdificacion de codigo para mejorar la optimizacion, legibilidad y eficiencia */
 
-const XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 const A = "https://rickandmortyapi.com/api/character/";
 
-const X = (a) => {
-  return new Promise((resolve, reject) => {
-    const B = new XMLHttpRequest();
-    B.onreadystatechange = () => {
-      if (B.readyState === 4) {
-        if (B.status === 200) {
-          resolve(JSON.parse(B.responseText));
-        } else {
-          reject(`HTTP error: ${B.status}`);
-        }
+const fetchCharacterData = async () => {
+  try {
+    const response = await fetch(A);
+    if (!response.ok) {
+      throw new Error(`HTTP error: ${response.status}`);
+    }
+    const d = await response.json();
+    console.log("Primer Llamado...");
+
+    if (d.results && d.results.length > 0) {
+      const responseF = await fetch(`${A}${d.results[0].id}`);
+      if (!responseF.ok) {
+        throw new Error(`HTTP error: ${responseF.status}`);
       }
-    };
-    B.open("GET", a, true);
-    B.send();
-  });
+      const f = await responseF.json();
+      console.log("Segundo Llamado...");
+
+      const responseH = await fetch(f.origin.url);
+      if (!responseH.ok) {
+        throw new Error(`HTTP error: ${responseH.status}`);
+      }
+      const h = await responseH.json();
+      console.log("Tercer Llamado...");
+
+      console.log(`Personajes: ${d.info.count}`);
+      console.log(`Primer Personaje: ${f.name}`);
+      console.log(`Dimensión: ${h.dimension}`);
+    } else {
+      console.error("No results found");
+    }
+  } catch (error) {
+    console.error(`Error: ${error.message}`);
+  }
 };
 
-let d;
-
-X(A)
-  .then((response) => {
-    d = response;
-    console.log("Primer Llamado...");
-    return X(`${A}${d.results[0].id}`);
-  })
-  .then((f) => {
-    console.log("Segundo Llamado...");
-    return X(f.origin.url).then((h) => ({ d, f, h }));
-  })
-  .then(({ d, f, h }) => {
-    console.log("Tercer Llamado...");
-    console.log(`Personajes: ${d.info.count}`);
-    console.log(`Primer Personaje: ${f.name}`);
-    console.log(`Dimensión: ${h.dimension}`);
-  })
-  .catch((error) => console.error(`Error: ${error}`));
+fetchCharacterData();

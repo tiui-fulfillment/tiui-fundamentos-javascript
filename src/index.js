@@ -1,33 +1,47 @@
 var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 
-var A = 'https://rickandmortyapi.com/api/character/';
-var B = new XMLHttpRequest();
+const A = 'https://rickandmortyapi.com/api/character/'
+const B = new XMLHttpRequest()
 
-function X(a, b) {
-  B.onreadystatechange = function (e) {
-    if (B.readyState == '4') {
-      if (B.status === '200')
-        b(null, B.responseText);
-      else return b(a);
-    }
-    else return b(a);
-  };
-  B.open('GET', a, false);
-  B.send();
-};
+const X = (a) => {
+    return new Promise((res, rej) => {
+        B.onreadystatechange = () => {
+            if (B.readyState == 4) {
+                if (B.status === 200) res(B.responseText)
+                else rej(B.status)
+            }
+        }
+        B.open('GET', a, false)
+        B.send()
+    })
+}
 
-X(A, function (c, d) {
-  if (c) return console.error('Error' + ' ' + c);
-  console.log('Primer Llamado...');
-  X(A + d.results[0].id, function (e, f) {
-    if (e) return console.error('Error' + ' ' + e);
-    console.log('Segundo Llamado...');
-    X(JSON.parse(f).origin.url, function (g, h) {
-      if (g) return console.error('Error' + ' ' + g);
-      console.log('Tercer Llamado...');
-      console.log('Personajes:' + ' ' + JSON.parse(d).info.count);
-      console.log('Primer Personaje:' + ' ' + JSON.parse(f).name);
-      console.log('Dimensión:' + ' ' + JSON.parse(h).dimension);
-    });
-  });
-});
+X(A)
+    .then((response) => {
+        console.log('Primer Llamado...')
+        const characters = JSON.parse(response).info.count
+        const firstCharacterId = JSON.parse(response).results[0].id
+        return X(A + firstCharacterId).then((response) => ({
+            response,
+            characters
+        }))
+    })
+    .then(({ response, characters }) => {
+        console.log('Segundo Llamado...')
+        const characterDetail = JSON.parse(response)
+        return X(characterDetail.origin.url).then((originResponse) => ({
+            characterDetail,
+            originResponse,
+            characters
+        }))
+    })
+    .then(({ characterDetail, originResponse, characters }) => {
+        console.log('Tercer Llamado...')
+        const origin = JSON.parse(originResponse)
+        console.log(`Personajes: ${characters}`)
+        console.log(`Primer Personaje: ${characterDetail.name}`)
+        console.log(`Dimensión: ${origin.dimension}`)
+    })
+    .catch((error) => {
+        console.error(error)
+    })

@@ -1,35 +1,35 @@
 const XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 
-const A = 'https://rickandmortyapi.com/api/character/';
-const B = new XMLHttpRequest();
+const apiUrl = 'https://rickandmortyapi.com/api/character/';
+const handleApi = new XMLHttpRequest();
 
-const X = (a, b) => {
-  B.onreadystatechange = function (e) {
-    if (B.readyState == 4) {
-      if (B.status === 200) {
-        var responseData = JSON.parse(B.responseText);
-        b(null, responseData);
+const fetchApi = (url, callback) => {
+  handleApi.onreadystatechange = function (e) {
+    if (handleApi.readyState == 4) {
+      if (handleApi.status === 200) {
+        var responseData = JSON.parse(handleApi.responseText);
+        callback(null, responseData);
       } else {
-        b(a);
+        callback(url);
       }
     }
   };
-  B.open('GET', a, false);
-  B.send();
+  handleApi.open('GET', url, false);
+  handleApi.send();
 };
 
-X(A, (c, d) => {
-  if (c) return console.error(`Error ${c}`);
+fetchApi(apiUrl, (error, data) => {
+  if (error) return console.error(`Error ${error}`);
   console.log('Primer Llamado...');
-  X(A + d.results[0].id, (e, f) => {
-    if (e) return console.error(`Error ${e}`);
+  fetchApi(apiUrl + data.results[0].id, (error2, characterData) => {
+    if (error2) return console.error(`Error ${error2}`);
     console.log('Segundo Llamado...');
-    X(f.origin.url, (g, h) => {
-      if (g) return console.error(`Error ${g}`);
+    fetchApi(characterData.origin.url, (error3, dimensionData) => {
+      if (error3) return console.error(`Error ${error3}`);
       console.log('Tercer Llamado...');
-      console.log(`Personajes: ${d.info.count}`);
-      console.log(`Primer Personaje: ${f.name}`);
-      console.log(`Dimensión: ${h?.dimension}`);
+      console.log(`Personajes: ${data.info.count}`);
+      console.log(`Primer Personaje: ${characterData.name}`);
+      console.log(`Dimensión: ${dimensionData?.dimension}`);
     });
   });
 });

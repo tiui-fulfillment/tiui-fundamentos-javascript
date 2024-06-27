@@ -3,9 +3,8 @@
   "version": "1.0.0",
   "description": "medir tus habilidades en JavaScript y ver cómo puedes resolver los desafíos propuestos",
   "main": "index.js",
-  "type": "module",
   "scripts": {
-    "start": "node src/index.js"
+    "start": "tsc && node dist/index.js"
   },
   "keywords": [
     "javascript",
@@ -15,5 +14,8 @@
   "license": "MIT",
   "dependencies": {
     "xmlhttprequest": "^1.8.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.2"
   }
 }

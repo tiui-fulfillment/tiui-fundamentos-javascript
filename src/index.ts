@@ -1,12 +1,13 @@
-const XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
+import { Character, Characters, Location } from "./types";
+const XMLHttpRequestModule = require("xmlhttprequest").XMLHttpRequest;
 
-const URL = 'https://rickandmortyapi.com/api/character/';
-const xhr = new XMLHttpRequest;
+const apiUrl = 'https://rickandmortyapi.com/api/character/';
+const xhr = new XMLHttpRequestModule();
 
-const fetchData = (url) => {
+const fetchData = <T>(url:string): Promise<T> => {
   return new Promise((resolve, reject) => {
     xhr.onreadystatechange = () => {
-      if (xhr.readyState == "4") {
+      if (xhr.readyState === 4) {
         if (xhr.status === 200){
           resolve(JSON.parse(xhr.responseText));
         } else{
@@ -22,14 +23,14 @@ const fetchData = (url) => {
 (async () => { 
   try {
     console.log("Primer Llamado...");
-    const characters = await fetchData(URL);
+    const characters = await fetchData<Characters>(apiUrl);
 
     console.log("Segundo Llamado...");
     const firstCharacterId = characters.results[0].id;
-    const firstCharacterData = await fetchData(URL.concat(firstCharacterId));
+    const firstCharacterData = await fetchData<Character>(apiUrl.concat(firstCharacterId.toString()));
 
     console.log("Tercer Llamado...");
-    const firstCharacterOrigin = await fetchData(firstCharacterData.origin.url);
+    const firstCharacterOrigin = await fetchData<Location>(firstCharacterData.origin.url);
 
     console.log(`Personajes: ${characters.info.count}`);
     console.log(`Primer Personaje: ${firstCharacterData.name}`);

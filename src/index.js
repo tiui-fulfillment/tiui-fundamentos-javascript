@@ -1,43 +1,35 @@
-const XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
+const API_URL = "https://rickandmortyapi.com/api/character/";
 
-const A = "https://rickandmortyapi.com/api/character/";
-const B = new XMLHttpRequest();
-
-const X = (a) => {
-  return new Promise((resolve, reject) => {
-    B.onreadystatechange = () => {
-      if (B.readyState === 4) {
-        if (B.status === 200) {
-          resolve(B.responseText);
-        } else {
-          reject(`Error: ${a}`);
-        }
-      }
-    };
-    B.open("GET", a, false);
-    B.send();
-  });
+const fetchData = async (url) => {
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(
+        `Error al obtener los datos de la API: ${response.status}`,
+      );
+    }
+    return await response.json();
+  } catch (error) {
+    throw new Error(`Error al obtener los datos de la API: ${error.message}`);
+  }
 };
 
 const main = async () => {
   try {
     console.log("Primer Llamado...");
-    const d = await X(A);
-    const data = JSON.parse(d);
+    const data = await fetchData(API_URL);
 
     console.log("Segundo Llamado...");
-    const f = await X(A + data.results[0].id);
-    const firstCharacter = JSON.parse(f);
+    const firstCharacter = await fetchData(API_URL + data.results[0].id);
 
     console.log("Tercer Llamado...");
-    const h = await X(firstCharacter.origin.url);
-    const dimensionData = JSON.parse(h);
+    const dimensionData = await fetchData(firstCharacter.origin.url);
 
     console.log(`Personajes: ${data.info.count}`);
     console.log(`Primer Personaje: ${firstCharacter.name}`);
     console.log(`Dimensión: ${dimensionData.dimension}`);
   } catch (error) {
-    console.error(error);
+    console.error(error.message);
   }
 };
 

@@ -1,33 +1,30 @@
-var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
+const axios = require('axios');
 
-var A = 'https://rickandmortyapi.com/api/character/';
-var B = new XMLHttpRequest();
+const url = 'https://rickandmortyapi.com/api/character/';
+let firstCharacter = '';
 
-function X(a, b) {
-  B.onreadystatechange = function (e) {
-    if (B.readyState == '4') {
-      if (B.status === '200')
-        b(null, B.responseText);
-      else return b(a);
-    }
-    else return b(a);
-  };
-  B.open('GET', a, false);
-  B.send();
-};
+const Datos = async () => {
+  try {
+    console.log('Primer Llamado...');
+    const response1 = await axios.get(url);
+    const characterId = response1.data.results[0].id;
 
-X(A, function (c, d) {
-  if (c) return console.error('Error' + ' ' + c);
-  console.log('Primer Llamado...');
-  X(A + d.results[0].id, function (e, f) {
-    if (e) return console.error('Error' + ' ' + e);
     console.log('Segundo Llamado...');
-    X(JSON.parse(f).origin.url, function (g, h) {
-      if (g) return console.error('Error' + ' ' + g);
-      console.log('Tercer Llamado...');
-      console.log('Personajes:' + ' ' + JSON.parse(d).info.count);
-      console.log('Primer Personaje:' + ' ' + JSON.parse(f).name);
-      console.log('Dimensión:' + ' ' + JSON.parse(h).dimension);
-    });
-  });
-});
+    const response2 = await axios.get(`${url}${characterId}`);
+    firstCharacter = response2.data.name; 
+    const originUrl = response2.data.origin.url;
+
+    console.log('Tercer Llamado...');
+    const response3 = await axios.get(originUrl);
+    console.log(`Primer Personaje: ${firstCharacter}`);
+    console.log(`Dimensión: ${response3.data.dimension}`);
+
+    const response4 = await axios.get(url);
+    console.log(`Personajes: ${response4.data.info.count}`);
+
+  } catch (error) {
+    console.error(`Error: ${error.message}`);
+  }
+}
+
+Datos();

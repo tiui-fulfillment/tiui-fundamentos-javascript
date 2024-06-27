@@ -4,7 +4,8 @@
   "description": "medir tus habilidades en JavaScript y ver cómo puedes resolver los desafíos propuestos",
   "main": "index.js",
   "scripts": {
-    "start": "node src/index.js"
+    "start": "node src/opcional.js",
+    "dev": "tsc src/opcional.ts"
   },
   "keywords": [
     "javascript",

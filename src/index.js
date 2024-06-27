@@ -1,58 +1,45 @@
-import { XMLHttpRequest } from 'xmlhttprequest';
+const API = 'https://rickandmortyapi.com/api/character/';
 
-const A = 'https://rickandmortyapi.com/api/character/';
-const B = new XMLHttpRequest();
+/**
+ * 
+ * @param {string} url_api - API URL
+ * @param {void} callback - Callback function
+ * @returns {Promise<string>} - Return data
+ */
+const fetchData = async (url_api, callback) => {
+  const response = await fetch(url_api); // Fetch API
+  const data = await response.text(); // Get data
 
-/*
-// Use this function to get the data from an API using fetch
+  callback(data); // Call callback function
 
-const X = async (a, b) => {
-  const r = await fetch(a);
-  const d = await r.text();
-  b(d);
-  return d;
-}
-*/
-
-// Use this function to get the data from an API using XMLHttpRequest
-function X(a, b) {
-  return new Promise((c) => {
-    B.onreadystatechange = function (e) {
-      if (B.readyState == '4') {
-        if (B.status == '200')
-          b(null, B.responseText);
-        else return b(a);
-      }
-      else return b(a);
-    };
-    B.open('GET', a, false);
-    B.send();
-
-    return c(B.responseText);
-  });
+  return data; // Return data
 }
 
-const R = async () => {
+
+/**
+ * main function to get data from API
+ */
+const main = async () => {
   try {
-    const r1 = await X(A, () => {
+    const data1 = await fetchData(API, () => {
       console.log('Primer Llamado...');
     });
 
-    const r2 = await X(A + JSON.parse(r1).results[0].id, () => {
+    const data2 = await fetchData(API + JSON.parse(data1).results[0].id, () => {
       console.log('Segundo Llamado...');
     });
 
-    const r3 = await X(JSON.parse(r2).origin.url, () => {
+    const data3 = await fetchData(JSON.parse(data2).origin.url, () => {
       console.log('Tercer Llamado...');
     });
 
-    console.log(`Personajes: ${JSON.parse(r1).info.count}`);
-    console.log(`Primer Personaje: ${JSON.parse(r2).name}`);
-    console.log(`Dimensión: ${JSON.parse(r3).dimension}`);
+    console.log(`Personajes: ${JSON.parse(data1).info.count}`);
+    console.log(`Primer Personaje: ${JSON.parse(data2).name}`);
+    console.log(`Dimensión: ${JSON.parse(data3).dimension}`);
 
-  } catch (e) {
-    console.error(`Error ${e}`);
+  } catch (error) {
+    console.error(`Error ${error}`); // Error handling message
   }
 }
 
-R();
+main(); // Call main function

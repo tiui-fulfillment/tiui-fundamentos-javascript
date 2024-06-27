@@ -1,33 +1,36 @@
-var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
+const XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
+const API = 'https://rickandmortyapi.com/api/character/';
 
-var A = 'https://rickandmortyapi.com/api/character/';
-var B = new XMLHttpRequest();
-
-function X(a, b) {
-  B.onreadystatechange = function (e) {
-    if (B.readyState == '4') {
-      if (B.status === '200')
-        b(null, B.responseText);
-      else return b(a);
-    }
-    else return b(a);
-  };
-  B.open('GET', a, false);
-  B.send();
+const fetchData = (url_api) => {
+  return new Promise((resolve, reject) => {
+    const xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = () => {
+      if (xhttp.readyState === 4) {
+        xhttp.status === 200
+          ? resolve(JSON.parse(xhttp.responseText))
+          : reject(new Error(`Error ${url_api}`));
+      }
+    };
+    xhttp.open('GET', url_api, true);
+    xhttp.send();
+  });
 };
 
-X(A, function (c, d) {
-  if (c) return console.error('Error' + ' ' + c);
-  console.log('Primer Llamado...');
-  X(A + d.results[0].id, function (e, f) {
-    if (e) return console.error('Error' + ' ' + e);
+const getCharacterInfo = async () => {
+  try {
+    console.log('Primer Llamado...');
+    const characters = await fetchData(API);
     console.log('Segundo Llamado...');
-    X(JSON.parse(f).origin.url, function (g, h) {
-      if (g) return console.error('Error' + ' ' + g);
-      console.log('Tercer Llamado...');
-      console.log('Personajes:' + ' ' + JSON.parse(d).info.count);
-      console.log('Primer Personaje:' + ' ' + JSON.parse(f).name);
-      console.log('Dimensión:' + ' ' + JSON.parse(h).dimension);
-    });
-  });
-});
+    const character = await fetchData(`${API}${characters.results[0].id}`);
+    console.log('Tercer Llamado...');
+    const origin = await fetchData(character.origin.url);
+
+    console.log(`Personajes: ${characters.info.count}`);
+    console.log(`Primer Personaje: ${character.name}`);
+    console.log(`Dimensión: ${origin.dimension}`);
+  } catch (err) {
+    console.error(err);
+  }
+};
+
+getCharacterInfo();

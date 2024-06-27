@@ -1,33 +1,45 @@
 var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 
-var A = 'https://rickandmortyapi.com/api/character/';
+var A = "https://rickandmortyapi.com/api/character/";
 var B = new XMLHttpRequest();
 
-function X(a, b) {
-  B.onreadystatechange = function (e) {
-    if (B.readyState == '4') {
-      if (B.status === '200')
-        b(null, B.responseText);
-      else return b(a);
-    }
-    else return b(a);
-  };
-  B.open('GET', a, false);
-  B.send();
+const request = (url) => {
+  return new Promise((resolve, reject) => {
+    B.onreadystatechange = () => {
+      if (B.readyState === 4) {
+        if (B.status === 200) {
+          resolve(B.responseText);
+        } else {
+          reject(new Error(B.status));
+        }
+      }
+    };
+    B.open("GET", url, false);
+    B.send();
+  });
 };
 
-X(A, function (c, d) {
-  if (c) return console.error('Error' + ' ' + c);
-  console.log('Primer Llamado...');
-  X(A + d.results[0].id, function (e, f) {
-    if (e) return console.error('Error' + ' ' + e);
-    console.log('Segundo Llamado...');
-    X(JSON.parse(f).origin.url, function (g, h) {
-      if (g) return console.error('Error' + ' ' + g);
-      console.log('Tercer Llamado...');
-      console.log('Personajes:' + ' ' + JSON.parse(d).info.count);
-      console.log('Primer Personaje:' + ' ' + JSON.parse(f).name);
-      console.log('Dimensión:' + ' ' + JSON.parse(h).dimension);
-    });
-  });
-});
+const fetchCharacter = async () => {
+  try {
+    console.log("Primer Llamado...");
+    const data = await request(A);
+    const { results, info } = JSON.parse(data);
+    console.log(`Personajes: ${info.count}`);
+
+    console.log("Segundo Llamado...");
+    const characterData = await request(`${A}${results[0].id}`);
+    const character = JSON.parse(characterData);
+
+    console.log("Tercer Llamado...");
+    const originData = await request(character.origin.url);
+    const { dimension } = JSON.parse(originData);
+
+    console.log(`Primer Personaje: ${character.name}`);
+    console.log(`Dimensión: ${dimension}`);
+
+  } catch (error) {
+    console.error(`Error ${error.message}`);
+  }  
+};
+
+fetchCharacter();

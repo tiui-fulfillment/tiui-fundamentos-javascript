@@ -1,46 +1,48 @@
 import { XMLHttpRequest } from "xmlhttprequest";
 
-const A = 'https://rickandmortyapi.com/api/character/';
+const API_ENDPOINT = 'https://rickandmortyapi.com/api/character/';
 
-const X = (a) => {
+const fetchData = (a) => {
   return new Promise((resolve, reject) => {
-  const B = new XMLHttpRequest(); 
-    B.onreadystatechange = (e) => {
-      if (B.readyState == '4') {
-        if (B.status === 200) {
+  const xhttp = new XMLHttpRequest(); 
+    xhttp.onreadystatechange = (e) => {
+      if (xhttp.readyState == '4') {
+        if (xhttp.status === 200) {
           try {
-            const parsedResponse = JSON.parse(B.responseText)
+            const parsedResponse = JSON.parse(xhttp.responseText)
             resolve(parsedResponse)
           } catch (error) {
             reject(new Error('Error parsing response'))
           }
         } else {
-          reject(new Error(`HTTP error ${B.status}`));
+          reject(new Error(`HTTP error ${xhttp.status}`));
         }
       }
     };
 
-    B.onerror = () => {
-      reject(new Error("Network error"));
-    };
-    B.open('GET', a, true);
-    B.send();
+    xhttp.onerror = () => {reject(new Error("Network error"))};
+    xhttp.open('GET', a, true);
+    xhttp.send();
   })
 };
 
-X(A)
-  .then(d => {
+async function handleRequests() {
+  try {
+    const data = await fetchData(API_ENDPOINT);
     console.log('Primer Llamado...');
-    return X(`${A}${d.results[0].id}`).then(f => ({ d, f }));
-  })
-  .then(({ d, f }) => {
+
+    const character = await fetchData(`${API_ENDPOINT}${data.results[0].id}`);
     console.log('Segundo Llamado...');
-    return X(f.origin.url).then(g => ({ d, f, g }));
-  })
-  .then(({ d, f, g }) => {
+
+    const origin = await fetchData(character.origin.url);
     console.log('Tercer Llamado...');
-    console.log(`Personajes: ${d.info.count}`);
-    console.log(`Primer Personaje: ${f.name}`);
-    console.log(`Dimensión: ${g.dimension}`);
-  })
-  .catch(c => console.error(c));
+    console.log(`Personajes: ${data.info.count}`);
+    console.log(`Primer Personaje: ${character.name}`);
+    console.log(`Dimensión: ${origin.dimension}`);
+
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+handleRequests();

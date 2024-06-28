@@ -1,3 +1,6 @@
+/* Estoy batallando usar XMLHttpRequest con typescript ya que no es muy común, por ahora mando la
+solución con fetch y TypeScript */
+
 // import { XMLHttpRequest } from "xmlhttprequest";
 
 // /* Me tomare el atrevimiento de cambiar las variables de nombre, el usar variables sin contexto
@@ -85,7 +88,7 @@
 
 console.log([...Array(60).keys()].reduce((line, el) => line+'-',''))
 
-//--- 3 Tercer y cuarto Problema
+//--- 3 Tercer y cuarto Problema, Opcional Agregar TypeScript
 const get_data_w_promise = async (_URL: string): Promise<any> => {
   try {
     const response = await fetch(_URL);

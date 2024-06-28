@@ -1,33 +1,57 @@
-var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
+// Importamos el módulo 'xmlhttprequest' para usar XMLHttpRequest en Node.js
+const { XMLHttpRequest } = require("xmlhttprequest");
 
-var A = 'https://rickandmortyapi.com/api/character/';
-var B = new XMLHttpRequest();
+// URL base de la API de Rick and Morty
+const baseURL = 'https://rickandmortyapi.com/api/character/';
 
-function X(a, b) {
-  B.onreadystatechange = function (e) {
-    if (B.readyState == '4') {
-      if (B.status === '200')
-        b(null, B.responseText);
-      else return b(a);
-    }
-    else return b(a);
-  };
-  B.open('GET', a, false);
-  B.send();
+// Función que realiza una solicitud GET y devuelve una Promesa
+const getPersonaje = (url) => {
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+
+    xhr.onreadystatechange = () => {
+      if (xhr.readyState === 4) {
+        if (xhr.status === 200) {
+          resolve(xhr.responseText);
+        } else {
+          reject(new Error(`Error en la solicitud: ${xhr.statusText}`));
+        }
+      }
+    };
+
+    xhr.open('GET', url, true);
+    xhr.send();
+  });
 };
 
-X(A, function (c, d) {
-  if (c) return console.error('Error' + ' ' + c);
-  console.log('Primer Llamado...');
-  X(A + d.results[0].id, function (e, f) {
-    if (e) return console.error('Error' + ' ' + e);
+// Función principal que ejecuta la lógica de las llamadas a la API
+const main = async () => {
+  try {
+    // Primer llamado a la API para obtener la lista de personajes
+    console.log('Primer Llamado...');
+    const response = await getPersonaje(baseURL);
+    const data = JSON.parse(response);
+
+    // Segundo llamado a la API para obtener detalles del primer personaje
     console.log('Segundo Llamado...');
-    X(JSON.parse(f).origin.url, function (g, h) {
-      if (g) return console.error('Error' + ' ' + g);
-      console.log('Tercer Llamado...');
-      console.log('Personajes:' + ' ' + JSON.parse(d).info.count);
-      console.log('Primer Personaje:' + ' ' + JSON.parse(f).name);
-      console.log('Dimensión:' + ' ' + JSON.parse(h).dimension);
-    });
-  });
-});
+    const firstCharacterId = data.results[0].id;
+    const response2 = await getPersonaje(`${baseURL}${firstCharacterId}`);
+    const character = JSON.parse(response2);
+
+    // Tercer llamado a la API para obtener la información de la dimensión del origen del personaje
+    console.log('Tercer Llamado...');
+    const response3 = await getPersonaje(character.origin.url);
+    const origin = JSON.parse(response3);
+
+    // Mostramos la información obtenida usando template strings
+    console.log(`Total de personajes: ${data.info.count}`);
+    console.log(`Primer Personaje: ${character.name}`);
+    console.log(`Dimensión: ${origin.dimension}`);
+
+  } catch (error) {
+    console.error(`Error: ${error}`);
+  }
+};
+
+// Ejecutamos la función principal
+main();

@@ -1,9 +1,9 @@
-import type { Origin, Result, Rickandmortyapi } from './interfaces/interface';
+import { Origin, Result, Rickandmortyapi } from './interfaces/interface';
 
 const API_URL = 'https://rickandmortyapi.com/api/character/';
 
 // Se quito XMLHttpRequest debido a que no es nativo de Node.js y se cambio por fetch
-async function fetchJSON<T> (url: string): Promise<T> {
+const fetchJSON = async <T> (url: string): Promise<T> => {
   try {
     const response = await fetch(url);
     return await response.json();
@@ -14,18 +14,18 @@ async function fetchJSON<T> (url: string): Promise<T> {
       throw new Error(`Unknown error fetching ${url}`);
     }
   }
-}
+};
 
-async function main () {
+const main = async () => {
   try {
     console.log('Primer Llamado...');
     const response = await fetchJSON<Rickandmortyapi>(API_URL);
 
     console.log('Segundo Llamado...');
-    const character: Result = await fetchJSON(API_URL + response.results[0].id);
+    const character = await fetchJSON<Result>(`${API_URL}${response.results[0].id}`);
 
     console.log('Tercer Llamado...');
-    const origin: Origin = await fetchJSON(character.origin.url);
+    const origin = await fetchJSON<Origin>(character.origin.url);
 
     console.log('Personajes:', response.info.count);
     console.log('Primer Personaje:', character.name);
@@ -33,6 +33,6 @@ async function main () {
   } catch (error) {
     console.error('Error', error);
   }
-}
+};
 
 main();

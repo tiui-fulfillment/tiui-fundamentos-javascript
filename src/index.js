@@ -1,36 +1,41 @@
 const XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 
-const A = 'https://rickandmortyapi.com/api/character/';
+const BASE_URL = 'https://rickandmortyapi.com/api/character/';
 
-function X(a) {
+// Una mejor alternativa es utilizar fetch, pero lo deje asi para conservar la base del problema.
+/**
+ * This function makes a get request to an url and returns te content as json.
+ * @param {string} url Url to call
+ * @returns {Promise<Object>}  
+ */
+function callApi(url) {
   return new Promise( (resolve, reject )=> {
-    const B = new XMLHttpRequest();
-    B.onreadystatechange = (e) =>{
-      if (B.readyState == '4') {
-        if (B.status === 200)
-          resolve(B.responseText);
-        else reject(a);
+    const HttpReq = new XMLHttpRequest();
+    HttpReq.onreadystatechange = (e) =>{
+      if (HttpReq.readyState == '4' && HttpReq.status === 200) {
+        resolve(JSON.parse(HttpReq.responseText));
       }
-      else reject(a);
+      else reject(url);
     };
-    B.open('GET', a, false);
-    B.send();
+    HttpReq.open('GET', url, false);
+    HttpReq.send();
   })
 };
 
 async function main() {
   try {
-    let d = await X(A);
+    const characters = await callApi(BASE_URL);
     console.log('Primer Llamado...');
-    d = JSON.parse(d);
-    const f = await X(`${A}${d.results[0].id}`);
+
+    const firstCharacter = await callApi(`${BASE_URL}${characters.results[0].id}`);
     console.log('Segundo Llamado...');
-    const h = await X(JSON.parse(f).origin.url);
+
+    const location = await callApi(firstCharacter.origin.url);
     console.log('Tercer Llamado...');
 
-    console.log(`Personajes: ${d.info.count}`);
-    console.log(`PrimerPersonaje: ${JSON.parse(f).name}`);
-    console.log(`Dimensión: ${JSON.parse(h).dimension}`);
+    console.log(`Personajes: ${characters.info.count}`);
+    console.log(`PrimerPersonaje: ${firstCharacter.name}`);
+    console.log(`Dimensión: ${location.dimension}`);
   } catch (e) {
     return console.error(`Error ${e}`);
   }

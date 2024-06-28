@@ -1,6 +1,6 @@
-const API_BASE = 'https://rickandmortyapi.com/api/character/';
+const API_BASE: string = 'https://rickandmortyapi.com/api/character/';
 
-const fetchData = async (API) => {
+const fetchData = async (API: string): Promise<any> => {
   try {
     const res = await fetch(API);
 
@@ -12,7 +12,9 @@ const fetchData = async (API) => {
 
     return data;
   } catch (error) {
-    throw new Error(error.message);
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    }
   }
 };
 
@@ -31,7 +33,9 @@ const app = async () => {
     console.log(`Primer Personaje: ${data2.name}`);
     console.log(`Dimensión: ${data3.dimension}`);
   } catch (error) {
-    console.error(error.message);
+    if (error instanceof Error) {
+      console.error(error.message);
+    }
   }
 };
 

@@ -1,33 +1,42 @@
-var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
+import { XMLHttpRequest } from 'xmlhttprequest';
 
-var A = 'https://rickandmortyapi.com/api/character/';
-var B = new XMLHttpRequest();
+const A = 'https://rickandmortyapi.com/api/character/';
+const B = new XMLHttpRequest();
 
-function X(a, b) {
-  B.onreadystatechange = function (e) {
-    if (B.readyState == '4') {
-      if (B.status === '200')
-        b(null, B.responseText);
-      else return b(a);
-    }
-    else return b(a);
-  };
-  B.open('GET', a, false);
-  B.send();
+const initialCall = url => {
+  return new Promise((resolve, reject) => {
+    B.onreadystatechange = function () {
+      if (B.readyState == 4) {
+        if (B.status === 200) {
+          resolve(B.responseText);
+          reject(
+            new Error(`Error requesting a resource not found: ${B.status}`)
+          );
+        }
+        reject(
+          new Error(`Error requesting a resource: ${B.status}, url: ${url}`)
+        );
+      }
+    };
+    B.open('GET', url, false);
+    B.send();
+  });
 };
 
-X(A, function (c, d) {
-  if (c) return console.error('Error' + ' ' + c);
-  console.log('Primer Llamado...');
-  X(A + d.results[0].id, function (e, f) {
-    if (e) return console.error('Error' + ' ' + e);
-    console.log('Segundo Llamado...');
-    X(JSON.parse(f).origin.url, function (g, h) {
-      if (g) return console.error('Error' + ' ' + g);
-      console.log('Tercer Llamado...');
-      console.log('Personajes:' + ' ' + JSON.parse(d).info.count);
-      console.log('Primer Personaje:' + ' ' + JSON.parse(f).name);
-      console.log('Dimensión:' + ' ' + JSON.parse(h).dimension);
-    });
-  });
-});
+const functionX = url => {
+  return initialCall(url).then(response => JSON.parse(response));
+};
+
+functionX(A)
+  .then(res => {
+    console.log(`Characters count: ${res.info.count}`);
+    return functionX(A + res.results[0].id);
+  })
+  .then(res => {
+    console.log(`First Character: ${res.name}`);
+    return functionX(res.origin.url);
+  })
+  .then(res => {
+    console.log(`Dimension: ${res.dimension}`);
+  })
+  .catch(e => console.log(e.message));

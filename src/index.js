@@ -4,30 +4,33 @@ var A = 'https://rickandmortyapi.com/api/character/';
 var B = new XMLHttpRequest();
 
 const X = (a, b)=> {
-  B.onreadystatechange = (e)=> {
-    if (B.readyState == '4') {
-      if (B.status === '200')
-        b(null, B.responseText);
-      else return b(a, B.responseText);
-    }
-    else return b(a);
-  };
-  B.open('GET', a, false);
-  B.send();
+  return new Promise((resolve, reject)=>{
+    B.onreadystatechange = (e)=> {
+      if (B.readyState == '4') {
+        if (B.status === '200')
+          resolve(B.responseText)
+        else resolve(B.responseText);
+      }
+      else resolve(B.responseText);
+    };
+    B.open('GET', a, false);
+    B.send();
+  })
 };
 
-X(A, (c, d)=> {
-  if (!d) return console.error('Error: not data found');
+X(A).then((res)=>{
   console.log('Primer Llamado...');
-  X(A + JSON.parse(d).results[0].id, (e, f) => {
-    if (!f) return console.error('Error: not data found');
+  var characterCount = JSON.parse(res).info.count
+  X(A+JSON.parse(res).results[0].id).then((res)=>{
+    var firstCharacterName  = JSON.parse(res).name
     console.log('Segundo Llamado...');
-    X(JSON.parse(f).origin.url, (g, h) => {
-      if (!h) return console.error('Error: not data found');
+    X(JSON.parse(res).origin.url).then((res)=>{
       console.log('Tercer Llamado...');
-      console.log(`Personajes: ${JSON.parse(d).info.count}`);
-      console.log(`Primer Personaje: ${JSON.parse(f).name}`);
-      console.log(`Dimensión: ${JSON.parse(h).dimension}`);
-    });
-  });
-});
+      var dimension = JSON.parse(res).dimension
+      console.log (`Personajes: ${characterCount}`);
+      console.log(`Primer Personaje: ${firstCharacterName}`);
+      console.log(`Dimensión: ${dimension}`);
+    })
+  })
+})
+

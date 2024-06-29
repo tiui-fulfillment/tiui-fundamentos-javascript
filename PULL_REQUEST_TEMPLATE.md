@@ -7,11 +7,11 @@ Ciudad: Ciudad de México
 Pais:México
 
 # Retos:
-  - [ x] Primer problema
-  - [ x] Segundo problema
-  - [ X] Tercer problema
-  - [ X] Cuarto problema
-  - [ X] Quinto problema
+  - [ ] Primer problema
+  - [ ] Segundo problema
+  - [ ] Tercer problema
+  - [ ] Cuarto problema
+  - [ ] Quinto problema
   - [ ] Opcional
 
 ## ¿Como explicarias el proposito de este proyecto? (opcional)

@@ -7,8 +7,8 @@ Ciudad: Ciudad de México
 Pais:México
 
 # Retos:
-  - [ ] Primer problema
-  - [ ] Segundo problema
+  - [ x] Primer problema
+  - [ x] Segundo problema
   - [ X] Tercer problema
   - [ X] Cuarto problema
   - [ X] Quinto problema
@@ -19,4 +19,4 @@ Evaluar los diferentes enfoques para consumir una API
 
 ## ¿Cuál es tu stack tecnológico preferido? ¿Por qué? (opcional)
 
-Frontend con react y backedn con nextjs
+Frontend con react y Backend con Nextjs o Express

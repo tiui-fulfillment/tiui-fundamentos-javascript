@@ -1,82 +1,68 @@
-var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
+const XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 
-var A = "https://rickandmortyapi.com/api/character/";
+const api = "https://rickandmortyapi.com/api/character/";
 
-const X = (url) => {
+const fetchData = (url) => {
   return new Promise((resolve, reject) => {
-    const B = new XMLHttpRequest();
-    B.onreadystatechange = () => {
-      if (B.readyState == 4) {
-        if (B.status === 200) {
-          resolve(B.responseText);
+    const xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = () => {
+      if (xhr.readyState === 4) {
+        if (xhr.status === 200) {
+          resolve(JSON.parse(xhr.responseText));
         } else {
-          reject(new Error(`Error: ${B.statusText}`));
+          reject(new Error(`Error: ${xhr.statusText}`));
         }
       }
     };
-    B.open("GET", url, true);
-    B.send();
+    xhr.open("GET", url, true);
+    xhr.send();
   });
 };
 
-// const X = (a, b) => {
-//   const B = new XMLHttpRequest();
-//   B.onreadystatechange = () => {
-//     if (B.readyState == 4) {
-//       if (B.status === 200) {
-//         b(null, B.responseText);
-//       } else {
-//         return b(a);
-//       }
-//     }
-//   };
-//   B.open("GET", a, true);
-//   B.send();
-// };
-
-X(A)
-  .then((d) => {
-    const data = JSON.parse(d);
+const getCharacter = async (url) => {
+  try {
+    const data = await fetchData(url);
     console.log("Primer Llamado...");
-    return X(`${A}${data.results[0].id}`).then((f) => ({ data, f }));
-  })
 
-  .then(({data, f}) => {
-    const character = JSON.parse(f);
+    const character = await fetchData(`${url}${data.results[0].id}`);
     console.log("Segundo Llamado...");
-    return X(character.origin.url).then((h) => ({
-      data,
-      character,
-      h,
-    }));
-  })
-  .then(({ data, character, h }) => {
-    const origin = JSON.parse(h);
+
+    const origin = await fetchData(character.origin.url);
     console.log("Tercer Llamado...");
+
     console.log(`Personajes: ${data.info.count}`);
     console.log(`Primer Personaje: ${character.name}`);
     console.log(`Dimensión: ${origin.dimension}`);
-  })
-  .catch((error) => console.error(error));
+  } catch (error) {
+    console.error(error);
+  }
+};
 
+getCharacter(api);
 
-// X(A, (c, d) => {
-//   if (c) return console.error(`Error: ${c}`);
+/////////// <<<<<   Usando Axios  >>>>>> //////////
 
-//   const data = JSON.parse(d);
-//   console.log("Primer Llamado...");
-//   X(`${A}${data.results[0].id}`, (e, f) => {
-//     if (e) return console.error(`Error: ${e}`);
+const axios = require("axios");
 
-//     const character = JSON.parse(f);
-//     console.log("Segundo Llamado...");
-//     X(character.origin.url, (g, h) => {
-//       if (g) return console.error(`Error ${g}`);
-//       const origin = JSON.parse(h);
-//       console.log("Tercer Llamado...");
-//       console.log(`Personajes: ${data.info.count}`);
-//       console.log(`Primer Personaje: ${character.name}`);
-//       console.log(`Dimensión: ${origin.dimension}`);
-//     });
-//   });
-// });
+const getCharacterRyM = async (url) => {
+  try {
+    const { data } = await axios.get(url);
+    console.log("Primer Llamado...");
+
+    const characterResponse = await axios.get(`${url}${data.results[0].id}`);
+    const character = characterResponse.data;
+    console.log("Segundo Llamado...");
+
+    const originResponse = await axios.get(character.origin.url);
+    const origin = originResponse.data;
+    console.log("Tercer Llamado...");
+
+    console.log(`Personajes: ${data.info.count}`);
+    console.log(`Primer Personaje: ${character.name}`);
+    console.log(`Dimensión: ${origin.dimension}`);
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+getCharacterRyM(api)

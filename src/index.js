@@ -8,7 +8,7 @@ function X(a, b) {
     if (B.readyState == '4') {
       if (B.status === '200')
         b(null, B.responseText);
-      else return b(a);
+      else return b(a, B.responseText);
     }
     else return b(a);
   };
@@ -17,13 +17,13 @@ function X(a, b) {
 };
 
 X(A, function (c, d) {
-  if (c) return console.error('Error' + ' ' + c);
+  if (!d) return console.error('Error: not data found');
   console.log('Primer Llamado...');
-  X(A + d.results[0].id, function (e, f) {
-    if (e) return console.error('Error' + ' ' + e);
+  X(A + JSON.parse(d).results[0].id, function (e, f) {
+    if (!f) return console.error('Error: not data found');
     console.log('Segundo Llamado...');
     X(JSON.parse(f).origin.url, function (g, h) {
-      if (g) return console.error('Error' + ' ' + g);
+      if (!h) return console.error('Error: not data found');
       console.log('Tercer Llamado...');
       console.log('Personajes:' + ' ' + JSON.parse(d).info.count);
       console.log('Primer Personaje:' + ' ' + JSON.parse(f).name);

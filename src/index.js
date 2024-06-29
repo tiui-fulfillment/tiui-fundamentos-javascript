@@ -1,33 +1,37 @@
-var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
+const XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 
-var A = 'https://rickandmortyapi.com/api/character/';
-var B = new XMLHttpRequest();
+const urlApi = 'https://rickandmortyapi.com/api/character/';
 
-function X(a, b) {
-  B.onreadystatechange = function (e) {
-    if (B.readyState == '4') {
-      if (B.status === '200')
-        b(null, B.responseText);
-      else return b(a);
+ async function realizarPeticion(url){
+  try{
+    const respuesta = await fetch(url);
+    if(!respuesta.ok){
+      throw new Error(`Error de red: `, respuesta.status);
     }
-    else return b(a);
-  };
-  B.open('GET', a, false);
-  B.send();
-};
+    const datos= await respuesta.json();
+    return datos;
+  }catch(err){
+    throw err;
+  }
+}
+(async ()=>{
+  try{
+    const personajes=await realizarPeticion(urlApi);
+    const personaje1=personajes.results[0];
+    const nombrePersonaje=personaje1.name;
+    const dimension=personaje1.origin.url;
+    const totalPersonajes=personajes.info.count;
+    const dimensionP=await realizarPeticion(dimension);
 
-X(A, function (c, d) {
-  if (c) return console.error('Error' + ' ' + c);
-  console.log('Primer Llamado...');
-  X(A + d.results[0].id, function (e, f) {
-    if (e) return console.error('Error' + ' ' + e);
-    console.log('Segundo Llamado...');
-    X(JSON.parse(f).origin.url, function (g, h) {
-      if (g) return console.error('Error' + ' ' + g);
-      console.log('Tercer Llamado...');
-      console.log('Personajes:' + ' ' + JSON.parse(d).info.count);
-      console.log('Primer Personaje:' + ' ' + JSON.parse(f).name);
-      console.log('Dimensión:' + ' ' + JSON.parse(h).dimension);
-    });
-  });
-});
+    console.log(`Total Personajes: ${totalPersonajes}`);
+    console.log(`Nombre del personaje: ${nombrePersonaje}`);
+    console.log(`Dimension: ${dimensionP.dimension}`);
+
+  }catch(err){
+    if(err.message.startsWith('Error de red')){
+      console.error('Hubo un error dentro de la conexión de red en la petición')
+    }else{
+      console.error('Hubo un error en la petición', err);
+    }
+  }
+})();

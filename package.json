@@ -1,6 +1,7 @@
 {
   "name": "tiui-fundamentos-javascript",
   "version": "1.0.0",
+  "type": "module",
   "description": "medir tus habilidades en JavaScript y ver cómo puedes resolver los desafíos propuestos",
   "main": "index.js",
   "scripts": {

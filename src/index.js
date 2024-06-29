@@ -1,33 +1,68 @@
-var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
+const XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 
-var A = 'https://rickandmortyapi.com/api/character/';
-var B = new XMLHttpRequest();
+const api = "https://rickandmortyapi.com/api/character/";
 
-function X(a, b) {
-  B.onreadystatechange = function (e) {
-    if (B.readyState == '4') {
-      if (B.status === '200')
-        b(null, B.responseText);
-      else return b(a);
-    }
-    else return b(a);
-  };
-  B.open('GET', a, false);
-  B.send();
+const fetchData = (url) => {
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = () => {
+      if (xhr.readyState === 4) {
+        if (xhr.status === 200) {
+          resolve(JSON.parse(xhr.responseText));
+        } else {
+          reject(new Error(`Error: ${xhr.statusText}`));
+        }
+      }
+    };
+    xhr.open("GET", url, true);
+    xhr.send();
+  });
 };
 
-X(A, function (c, d) {
-  if (c) return console.error('Error' + ' ' + c);
-  console.log('Primer Llamado...');
-  X(A + d.results[0].id, function (e, f) {
-    if (e) return console.error('Error' + ' ' + e);
-    console.log('Segundo Llamado...');
-    X(JSON.parse(f).origin.url, function (g, h) {
-      if (g) return console.error('Error' + ' ' + g);
-      console.log('Tercer Llamado...');
-      console.log('Personajes:' + ' ' + JSON.parse(d).info.count);
-      console.log('Primer Personaje:' + ' ' + JSON.parse(f).name);
-      console.log('Dimensión:' + ' ' + JSON.parse(h).dimension);
-    });
-  });
-});
+const getCharacter = async (url) => {
+  try {
+    const data = await fetchData(url);
+    console.log("Primer Llamado...");
+
+    const character = await fetchData(`${url}${data.results[0].id}`);
+    console.log("Segundo Llamado...");
+
+    const origin = await fetchData(character.origin.url);
+    console.log("Tercer Llamado...");
+
+    console.log(`Personajes: ${data.info.count}`);
+    console.log(`Primer Personaje: ${character.name}`);
+    console.log(`Dimensión: ${origin.dimension}`);
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+getCharacter(api);
+
+/////////// <<<<<   Usando Axios  >>>>>> //////////
+
+const axios = require("axios");
+
+const getCharacterRyM = async (url) => {
+  try {
+    const { data } = await axios.get(url);
+    console.log("Primer Llamado...");
+
+    const characterResponse = await axios.get(`${url}${data.results[0].id}`);
+    const character = characterResponse.data;
+    console.log("Segundo Llamado...");
+
+    const originResponse = await axios.get(character.origin.url);
+    const origin = originResponse.data;
+    console.log("Tercer Llamado...");
+
+    console.log(`Personajes: ${data.info.count}`);
+    console.log(`Primer Personaje: ${character.name}`);
+    console.log(`Dimensión: ${origin.dimension}`);
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+getCharacterRyM(api)

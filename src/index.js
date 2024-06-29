@@ -1,33 +1,37 @@
-var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
+const XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 
-var A = 'https://rickandmortyapi.com/api/character/';
-var B = new XMLHttpRequest();
+const API = 'https://rickandmortyapi.com/api/character/';
 
-function X(a, b) {
-  B.onreadystatechange = function (e) {
-    if (B.readyState == '4') {
-      if (B.status === '200')
-        b(null, B.responseText);
-      else return b(a);
-    }
-    else return b(a);
-  };
-  B.open('GET', a, false);
-  B.send();
+const fetchData = (url) => {
+  return new Promise((resolve, reject) => {
+    const xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = () => {
+      if (xhttp.readyState === 4) {
+        if (xhttp.status === 200) {
+          resolve(JSON.parse(xhttp.responseText));
+        } else {
+          reject(new Error(`Error ${xhttp.status}`));
+        }
+      }
+    };
+    xhttp.open('GET', url, true);
+    xhttp.send();
+  });
 };
 
-X(A, function (c, d) {
-  if (c) return console.error('Error' + ' ' + c);
-  console.log('Primer Llamado...');
-  X(A + d.results[0].id, function (e, f) {
-    if (e) return console.error('Error' + ' ' + e);
+fetchData(API)
+  .then(data1 => {
+    console.log('Primer Llamado...');
+    return fetchData(`${API}${data1.results[0].id}`).then(data2 => ({ data1, data2 }));
+  })
+  .then(({ data1, data2 }) => {
     console.log('Segundo Llamado...');
-    X(JSON.parse(f).origin.url, function (g, h) {
-      if (g) return console.error('Error' + ' ' + g);
-      console.log('Tercer Llamado...');
-      console.log('Personajes:' + ' ' + JSON.parse(d).info.count);
-      console.log('Primer Personaje:' + ' ' + JSON.parse(f).name);
-      console.log('Dimensión:' + ' ' + JSON.parse(h).dimension);
-    });
-  });
-});
+    return fetchData(data2.origin.url).then(data3 => ({ data1, data2, data3 }));
+  })
+  .then(({ data1, data2, data3 }) => {
+    console.log('Tercer Llamado...');
+    console.log(`Personajes: ${data1.info.count}`);
+    console.log(`Primer Personaje: ${data2.name}`);
+    console.log(`Dimensión: ${data3.dimension}`);
+  })
+  .catch(error => console.error(error));

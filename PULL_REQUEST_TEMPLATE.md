@@ -8,7 +8,7 @@ Pais: México
 
 # Retos:
   - [X] Primer problema
-  - [ ] Segundo problema
+  - [X] Segundo problema
   - [ ] Tercer problema
   - [ ] Cuarto problema
   - [ ] Quinto problema

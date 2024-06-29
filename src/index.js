@@ -1,33 +1,44 @@
-var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
+const XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 
-var A = 'https://rickandmortyapi.com/api/character/';
-var B = new XMLHttpRequest();
+const API = 'https://rickandmortyapi.com/api/character/';
 
-function X(a, b) {
-  B.onreadystatechange = function (e) {
-    if (B.readyState == '4') {
-      if (B.status === '200')
-        b(null, B.responseText);
-      else return b(a);
-    }
-    else return b(a);
-  };
-  B.open('GET', a, false);
-  B.send();
+const fetchData = (url) => {
+	return new Promise((resolve, reject) => {
+		const xhr = new XMLHttpRequest();
+		xhr.onreadystatechange = () => {
+			if (xhr.readyState === 4) {
+				if (xhr.status === 200) {
+					resolve(JSON.parse(xhr.responseText));
+				} 
+				else {
+					reject(`Error: ${xhr.status}`);
+				}
+			}
+		};
+		xhr.open('GET', url, true);
+		xhr.send();
+	});
 };
 
-X(A, function (c, d) {
-  if (c) return console.error('Error' + ' ' + c);
-  console.log('Primer Llamado...');
-  X(A + d.results[0].id, function (e, f) {
-    if (e) return console.error('Error' + ' ' + e);
-    console.log('Segundo Llamado...');
-    X(JSON.parse(f).origin.url, function (g, h) {
-      if (g) return console.error('Error' + ' ' + g);
-      console.log('Tercer Llamado...');
-      console.log('Personajes:' + ' ' + JSON.parse(d).info.count);
-      console.log('Primer Personaje:' + ' ' + JSON.parse(f).name);
-      console.log('Dimensión:' + ' ' + JSON.parse(h).dimension);
-    });
-  });
-});
+const main = async () => {
+	try {
+		console.log('Primer Llamado...');
+		const data1 = await fetchData(API);
+		const characterId = data1.results[0].id;
+
+		console.log('Segundo Llamado...');
+		const data2 = await fetchData(`${API}${characterId}`);
+		const originUrl = data2.origin.url;
+
+		console.log('Tercer Llamado...');
+		const data3 = await fetchData(originUrl);
+		console.log(`Personajes: ${data1.info.count}`);
+		console.log(`Primer Personaje: ${data2.name}`);
+		console.log(`Dimensión: ${data3.dimension}`);
+	} 
+	catch (error) {
+		console.error(`Error en la secuencia de llamadas: ${error}`);
+	}
+};
+
+main();

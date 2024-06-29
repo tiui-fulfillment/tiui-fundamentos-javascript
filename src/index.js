@@ -1,33 +1,34 @@
-var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
+const RICK_AND_MORTY_API = "https://rickandmortyapi.com/api/character/";
 
-var A = 'https://rickandmortyapi.com/api/character/';
-var B = new XMLHttpRequest();
-
-function X(a, b) {
-  B.onreadystatechange = function (e) {
-    if (B.readyState == '4') {
-      if (B.status === '200')
-        b(null, B.responseText);
-      else return b(a);
+const fetchData = (url) =>
+  fetch(url).then((response) => {
+    if (!response.ok) {
+      throw new Error(`Error ${response.status}`);
     }
-    else return b(a);
-  };
-  B.open('GET', a, false);
-  B.send();
-};
-
-X(A, function (c, d) {
-  if (c) return console.error('Error' + ' ' + c);
-  console.log('Primer Llamado...');
-  X(A + d.results[0].id, function (e, f) {
-    if (e) return console.error('Error' + ' ' + e);
-    console.log('Segundo Llamado...');
-    X(JSON.parse(f).origin.url, function (g, h) {
-      if (g) return console.error('Error' + ' ' + g);
-      console.log('Tercer Llamado...');
-      console.log('Personajes:' + ' ' + JSON.parse(d).info.count);
-      console.log('Primer Personaje:' + ' ' + JSON.parse(f).name);
-      console.log('Dimensión:' + ' ' + JSON.parse(h).dimension);
-    });
+    return response.json();
   });
-});
+
+async function getRickAndMortyData() {
+  try {
+    const initialData = await fetchData(RICK_AND_MORTY_API);
+    console.log("Primer Llamado...");
+
+    const firstCharacterId = initialData.results[0].id;
+    const secondCallData = await fetchData(
+      `${RICK_AND_MORTY_API}${firstCharacterId}`
+    );
+    console.log("Segundo Llamado...");
+
+    const originUrl = secondCallData.origin.url;
+    const thirdCallData = await fetchData(originUrl);
+    console.log("Tercer Llamado...");
+
+    console.log(`Personajes: ${initialData.info.count}`);
+    console.log(`Primer Personaje: ${secondCallData.name}`);
+    console.log(`Dimensión: ${thirdCallData.dimension}`);
+  } catch (error) {
+    console.error("Error:", error);
+  }
+}
+
+getRickAndMortyData();

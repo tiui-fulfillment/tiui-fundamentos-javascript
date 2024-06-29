@@ -7,7 +7,7 @@ Ciudad: Soyaniquilpan, Estado de México
 Pais: México
 
 # Retos:
-  - [ ] Primer problema
+  - [X] Primer problema
   - [ ] Segundo problema
   - [ ] Tercer problema
   - [ ] Cuarto problema

@@ -1,33 +1,38 @@
-var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
+import { XMLHttpRequest } from "xmlhttprequest";
 
-var A = 'https://rickandmortyapi.com/api/character/';
-var B = new XMLHttpRequest();
+const url = 'https://rickandmortyapi.com/api/character/';
+const request = new XMLHttpRequest();
 
-function X(a, b) {
-  B.onreadystatechange = function (e) {
-    if (B.readyState == '4') {
-      if (B.status === '200')
-        b(null, B.responseText);
-      else return b(a);
-    }
-    else return b(a);
-  };
-  B.open('GET', a, false);
-  B.send();
-};
+const MakeRequest = (requestUrl)=>
+   new Promise((resolve, reject)=>{
+    request.onreadystatechange = function (e) {
+      if (request.readyState === 4) {
+        if (request.status === 200) resolve(request.responseText);
+        else reject(request.status);
+      }
+    };
+    request.open('GET', requestUrl, false);
+    request.send();
+  })
 
-X(A, function (c, d) {
-  if (c) return console.error('Error' + ' ' + c);
+MakeRequest(url).then((res)=>{
+  const characterCount = JSON.parse(res).info.count
+  const firstCharacterId = JSON.parse(res).results[0].id
+  const firstCharacterUrl = url+firstCharacterId
   console.log('Primer Llamado...');
-  X(A + d.results[0].id, function (e, f) {
-    if (e) return console.error('Error' + ' ' + e);
+  MakeRequest(firstCharacterUrl).then((res)=>{
+    const firstCharacterName  = JSON.parse(res).name
+    const originUrl = JSON.parse(res).origin.url
     console.log('Segundo Llamado...');
-    X(JSON.parse(f).origin.url, function (g, h) {
-      if (g) return console.error('Error' + ' ' + g);
+    MakeRequest(originUrl).then((res)=>{
+      const firstCharacterOrigin = JSON.parse(res).dimension
       console.log('Tercer Llamado...');
-      console.log('Personajes:' + ' ' + JSON.parse(d).info.count);
-      console.log('Primer Personaje:' + ' ' + JSON.parse(f).name);
-      console.log('Dimensión:' + ' ' + JSON.parse(h).dimension);
-    });
-  });
-});
+      console.log (`Personajes: ${characterCount}`);
+      console.log(`Primer Personaje: ${firstCharacterName}`);
+      console.log(`Dimensión: ${firstCharacterOrigin}`);
+    })
+  })
+}).catch((err)=>{
+  console.error(`Error al realizar la petición. Status: ${err}`)
+})
+

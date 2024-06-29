@@ -3,16 +3,23 @@
   "version": "1.0.0",
   "description": "medir tus habilidades en JavaScript y ver cómo puedes resolver los desafíos propuestos",
   "main": "index.js",
+  "type": "module",
   "scripts": {
-    "start": "node src/index.js"
+    "start": "node src/index.js",
+    "tsc-start": "npx tsx src/index.ts"
   },
   "keywords": [
     "javascript",
     "node"
   ],
-  "author": "Alejandro Lopez <alejandro.lopez@tiui.mx>",
+  "author": "Jose Alonso Mora Martinez",
   "license": "MIT",
   "dependencies": {
     "xmlhttprequest": "^1.8.0"
+  },
+  "devDependencies": {
+    "@types/xmlhttprequest": "^1.8.2",
+    "tsx": "^4.16.0",
+    "typescript": "^5.5.2"
   }
 }

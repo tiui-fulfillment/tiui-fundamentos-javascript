@@ -1,14 +1,12 @@
-var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
+const XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 
-var A = 'https://rickandmortyapi.com/api/character/';
-var B = new XMLHttpRequest();
+const A = 'https://rickandmortyapi.com/api/character/';
+const B = new XMLHttpRequest();
 
-function X(a, b) {
-  B.onreadystatechange = function (e) {
-    if (B.readyState == '4') {
-      if (B.status === '200')
-        b(null, B.responseText);
-      else return b(a);
+const X = (a, b) => {
+  B.onload = (e) => {
+    if (B.readyState == '4' && B.status == '200') {
+        b(null, JSON.parse(B.responseText));
     }
     else return b(a);
   };
@@ -16,18 +14,26 @@ function X(a, b) {
   B.send();
 };
 
-X(A, function (c, d) {
-  if (c) return console.error('Error' + ' ' + c);
+X(A, (c, d) => {
+  if (c) return console.error(`Error ${c}`);
   console.log('Primer Llamado...');
-  X(A + d.results[0].id, function (e, f) {
-    if (e) return console.error('Error' + ' ' + e);
+
+  X(A + d.results[0].id, (e, f) => {
+    if (e) return console.error(`Error ${e}`);
     console.log('Segundo Llamado...');
-    X(JSON.parse(f).origin.url, function (g, h) {
-      if (g) return console.error('Error' + ' ' + g);
+
+    X(f.origin.url, (g, h) => {
+      if (g) return console.error(`Error ${g}`);
       console.log('Tercer Llamado...');
-      console.log('Personajes:' + ' ' + JSON.parse(d).info.count);
-      console.log('Primer Personaje:' + ' ' + JSON.parse(f).name);
-      console.log('Dimensión:' + ' ' + JSON.parse(h).dimension);
+
+      X(h.url, (i, j) => {
+        if(i) return console.error(`Error ${i}`);
+        console.log(`Personajes: ${d.info.count}`);
+        console.log(`Primer Personaje: ${f.name}`);
+        console.log(`Dimensión: ${h.dimension}`);
+      })
+      
     });
+
   });
 });

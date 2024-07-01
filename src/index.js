@@ -1,33 +1,32 @@
-var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
+const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 
-var A = 'https://rickandmortyapi.com/api/character/';
-var B = new XMLHttpRequest();
+const A = 'https://rickandmortyapi.com/api/character/';
 
-function X(a, b) {
-  B.onreadystatechange = function (e) {
-    if (B.readyState == '4') {
-      if (B.status === '200')
-        b(null, B.responseText);
-      else return b(a);
-    }
-    else return b(a);
-  };
-  B.open('GET', a, false);
-  B.send();
+const fetchData = async (url) => {
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+  return response.json();
 };
 
-X(A, function (c, d) {
-  if (c) return console.error('Error' + ' ' + c);
-  console.log('Primer Llamado...');
-  X(A + d.results[0].id, function (e, f) {
-    if (e) return console.error('Error' + ' ' + e);
+const main = async () => {
+  try {
+    console.log('Primer Llamado...');
+    const data = await fetchData(A);
+
     console.log('Segundo Llamado...');
-    X(JSON.parse(f).origin.url, function (g, h) {
-      if (g) return console.error('Error' + ' ' + g);
-      console.log('Tercer Llamado...');
-      console.log('Personajes:' + ' ' + JSON.parse(d).info.count);
-      console.log('Primer Personaje:' + ' ' + JSON.parse(f).name);
-      console.log('Dimensión:' + ' ' + JSON.parse(h).dimension);
-    });
-  });
-});
+    const character = await fetchData(`${A}${data.results[0].id}`);
+
+    console.log('Tercer Llamado...');
+    const origin = await fetchData(character.origin.url);
+
+    console.log(`Personajes: ${data.info.count}`);
+    console.log(`Primer Personaje: ${character.name}`);
+    console.log(`Dimensión: ${origin.dimension}`);
+  } catch (error) {
+    console.error(`Error: ${error.message}`);
+  }
+};
+
+main();

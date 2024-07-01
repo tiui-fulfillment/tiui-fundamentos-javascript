@@ -10,9 +10,10 @@
     "javascript",
     "node"
   ],
-  "author": "Alejandro Lopez <alejandro.lopez@tiui.mx>",
+  "author": "Santiago Martinez Vallejo <santimtzv01@gmail.com>",
   "license": "MIT",
   "dependencies": {
+    "@types/node": "^20.14.9",
     "xmlhttprequest": "^1.8.0"
   }
 }

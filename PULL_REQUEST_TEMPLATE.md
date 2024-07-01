@@ -1,13 +1,13 @@
 ## DESCRIPTION
 
-Nombre:
-Email:
-WhatsApp:
-Ciudad:
-Pais:
+Nombre: Omar Andrés Ibarra Olivas
+Email: ibarraolivas.oa@gmail.com
+WhatsApp: 6624605889
+Ciudad: Hermosillo
+Pais: México
 
 # Retos:
-  - [ ] Primer problema
+  - [x] Primer problema
   - [ ] Segundo problema
   - [ ] Tercer problema
   - [ ] Cuarto problema

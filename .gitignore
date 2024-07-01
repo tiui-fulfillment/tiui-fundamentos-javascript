@@ -1,0 +1,14 @@
+# Archivos temporales o de respaldo
+*~
+
+# Archivos de compilación
+*.class
+*.o
+*.obj
+
+# Archivos de sistema
+.DS_Store
+Thumbs.db
+
+# Directorios
+node_modules/

@@ -1,33 +1,40 @@
-var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
-
-var A = 'https://rickandmortyapi.com/api/character/';
-var B = new XMLHttpRequest();
-
-function X(a, b) {
-  B.onreadystatechange = function (e) {
-    if (B.readyState == '4') {
-      if (B.status === '200')
-        b(null, B.responseText);
-      else return b(a);
-    }
-    else return b(a);
-  };
-  B.open('GET', a, false);
-  B.send();
-};
-
-X(A, function (c, d) {
-  if (c) return console.error('Error' + ' ' + c);
-  console.log('Primer Llamado...');
-  X(A + d.results[0].id, function (e, f) {
-    if (e) return console.error('Error' + ' ' + e);
-    console.log('Segundo Llamado...');
-    X(JSON.parse(f).origin.url, function (g, h) {
-      if (g) return console.error('Error' + ' ' + g);
-      console.log('Tercer Llamado...');
-      console.log('Personajes:' + ' ' + JSON.parse(d).info.count);
-      console.log('Primer Personaje:' + ' ' + JSON.parse(f).name);
-      console.log('Dimensión:' + ' ' + JSON.parse(h).dimension);
+"use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
-  });
-});
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const baseUrl = "https://rickandmortyapi.com/api/character/";
+function sendRequest(url) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const response = yield fetch(url);
+        if (!response.ok) {
+            throw new Error('Request failed');
+        }
+        return response.json();
+    });
+}
+function printResults() {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const firstCall = yield sendRequest(baseUrl);
+            console.log('Primer llamado');
+            const secondCall = yield sendRequest(`${baseUrl}${firstCall.results[0].id}`);
+            console.log('Segundo llamado');
+            const thirdCall = yield sendRequest(secondCall.origin.url);
+            console.log('Tercer llamado');
+            console.log('Personajes: ' + firstCall.info.count);
+            console.log('Primer Personaje: ' + secondCall.name);
+            console.log('Dimensión: ' + thirdCall.dimension);
+        }
+        catch (error) {
+            console.error('Request failed', error);
+        }
+    });
+}
+printResults();

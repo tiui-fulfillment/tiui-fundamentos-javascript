@@ -4,7 +4,9 @@
   "description": "medir tus habilidades en JavaScript y ver cómo puedes resolver los desafíos propuestos",
   "main": "index.js",
   "scripts": {
-    "start": "node src/index.js"
+    "start": "node src/index.js",
+    "tsc": "tsc",
+    "start_ts": "tsc src/index_ts.ts && node src/index_ts.js"
   },
   "keywords": [
     "javascript",
@@ -13,6 +15,8 @@
   "author": "Alejandro Lopez <alejandro.lopez@tiui.mx>",
   "license": "MIT",
   "dependencies": {
+    "@types/node": "^20.14.9",
+    "typescript": "^5.5.2",
     "xmlhttprequest": "^1.8.0"
   }
 }

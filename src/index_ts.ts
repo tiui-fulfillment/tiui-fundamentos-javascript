@@ -1,22 +1,25 @@
-var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
+import { XMLHttpRequest } from 'xmlhttprequest';
 
-var API = 'https://rickandmortyapi.com/api/character/';
-var xhttp = new XMLHttpRequest();
-var fetchData = (url_api) => {
-  return new Promise((resolve, reject) => {
+const API: string = 'https://rickandmortyapi.com/api/character/';
+let xhttp = new XMLHttpRequest;
+
+function fetchData(url_api: string): Promise<any>{
+  const promise = new Promise((resolve, reject) => {
     try {
-      xhttp.open('GET', url_api, false);
+      xhttp.open('GET', url_api, false, '', '');
       xhttp.onreadystatechange = (e) => {
         if (xhttp.readyState === 4 && xhttp.status === 200)
-          resolve(JSON.parse(xhttp.responseText));
+          resolve(JSON.parse(xhttp.responseText))   
         else reject(url_api);
       };
-      xhttp.send();
+      xhttp.send(null);
     } catch (error) {
       reject(error);
     }
   });
+  return promise;
 }
+
 
 fetchData(API)
   .then(data1 => { 
@@ -33,4 +36,5 @@ fetchData(API)
     console.log('Tercer Llamado...');
     console.log(`Dimensión: ${data3.dimension}`);
   })
-  .catch(error => console.error(`Error ${error}`));
+  .catch(error => console.error(`Error ${error}`))
+  .finally(() => 'Done');
